@@ -1,15 +1,32 @@
 console.log("App iniciada (Fase 2 - CRUD en memoria)");
 
 /* ===========================
-   1. PRODUCTOS EN MEMORIA
+   1. PRODUCTOS EN LOCALSTORAGE
    =========================== */
 
-// Usamos let porque vamos a modificar el array
-let productos = [
-  { nombre: "Cloruro potásico", densidad: 2.0 },   // g/mL
-  { nombre: "Sodio cloruro", densidad: 2.16 },     // g/mL
-  { nombre: "Potasio acetato", densidad: 1.57 }    // g/mL
-];
+const LS_KEY = "productos_densidades";
+
+// Cargar productos desde localStorage
+function cargarProductos() {
+  const guardado = localStorage.getItem(LS_KEY);
+
+  if (guardado) {
+    // Si hay datos guardados → los usamos
+    productos = JSON.parse(guardado);
+  } else {
+    // Primera vez → usar productos por defecto
+    productos = [
+      { nombre: "Cloruro potásico", densidad: 2.0 },
+      { nombre: "Sodio cloruro", densidad: 2.16 },
+      { nombre: "Potasio acetato", densidad: 1.57 }
+    ];
+  }
+}
+
+// Guardar productos en localStorage
+function guardarProductos() {
+  localStorage.setItem(LS_KEY, JSON.stringify(productos));
+}
 
 /* ===========================
    2. REFERENCIAS A ELEMENTOS
@@ -113,8 +130,9 @@ btnNuevoProducto.addEventListener("click", () => {
   }
 
   productos.push({ nombre, densidad });
-  renderSelectProductos();
-  renderTablaProductos();
+    guardarProductos();
+    renderSelectProductos();
+    renderTablaProductos();
 });
 
 // Editar producto
@@ -135,13 +153,13 @@ function editarProducto(index) {
     return;
   }
 
-  productos[index] = {
-    nombre: nuevoNombre,
-    densidad: nuevaDensidad
-  };
-
-  renderSelectProductos();
-  renderTablaProductos();
+ productos[index] = {
+  nombre: nuevoNombre,
+  densidad: nuevaDensidad
+};
+    guardarProductos();
+    renderSelectProductos();
+    renderTablaProductos();
 }
 
 // Eliminar producto
@@ -152,8 +170,9 @@ function eliminarProducto(index) {
   if (!confirmado) return;
 
   productos.splice(index, 1);
-  renderSelectProductos();
-  renderTablaProductos();
+guardarProductos();
+renderSelectProductos();
+renderTablaProductos();
 }
 
 /* ===========================
@@ -201,6 +220,7 @@ document.getElementById("btnCalcular").addEventListener("click", () => {
    =========================== */
 
 function inicializar() {
+    cargarProductos();
   renderSelectProductos();
   renderTablaProductos();
 }
