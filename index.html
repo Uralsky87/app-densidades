@@ -2,14 +2,45 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>App de Densidades</title>
+  <title>App de Densidades – Fase 1</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <h1>App de Densidades (Fase 0)</h1>
-  <p>Si estás viendo esto en el navegador, todo está listo para empezar 😄</p>
 
-  <!-- Más adelante aquí irá la interfaz de la calculadora -->
+  <h1>Calculadora de Densidades</h1>
+
+  <div class="card">
+    <h2>Cálculo</h2>
+
+    <!-- Selector de producto -->
+    <label for="producto">Producto:</label>
+    <select id="producto"></select>
+
+    <!-- Tipo de cálculo -->
+    <label for="tipoCalculo">Tipo de cálculo:</label>
+    <select id="tipoCalculo">
+      <option value="masa-a-vol">Masa → Volumen</option>
+      <option value="vol-a-masa">Volumen → Masa</option>
+    </select>
+
+    <!-- Input de dato -->
+    <label for="valor">Valor:</label>
+    <input type="number" id="valor" placeholder="Introduce número" />
+
+    <!-- Unidades -->
+    <label for="unidad">Unidad:</label>
+    <select id="unidad">
+      <option value="g">g</option>
+      <option value="kg">kg</option>
+      <option value="ml">mL</option>
+      <option value="l">L</option>
+    </select>
+
+    <button id="btnCalcular">Calcular</button>
+
+    <!-- Resultado -->
+    <div id="resultado" class="resultado"></div>
+  </div>
 
   <script src="app.js"></script>
 </body>
