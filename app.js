@@ -7,6 +7,26 @@ console.log("App iniciada (Fase 3 - validaciones y UX)");
 const LS_KEY = "productos_densidades";
 let productos = [];
 
+/* ===========================
+   HISTORIAL
+   =========================== */
+
+const LS_HIST = "historial_densidades";
+let historial = [];
+
+function cargarHistorial() {
+  const guardado = localStorage.getItem(LS_HIST);
+  if (guardado) {
+    historial = JSON.parse(guardado);
+  } else {
+    historial = [];
+  }
+}
+
+function guardarHistorial() {
+  localStorage.setItem(LS_HIST, JSON.stringify(historial));
+}
+
 // Cargar productos desde localStorage
 function cargarProductos() {
   const guardado = localStorage.getItem(LS_KEY);
@@ -112,6 +132,45 @@ function renderTablaProductos() {
     fila.appendChild(tdAcciones);
 
     tablaProductosBody.appendChild(fila);
+  });
+}
+
+function renderHistorial() {
+  const tbody = document.querySelector("#tablaHistorial tbody");
+  tbody.innerHTML = "";
+
+  if (historial.length === 0) {
+    const fila = document.createElement("tr");
+    const celda = document.createElement("td");
+    celda.colSpan = 4;
+    celda.textContent = "No hay cálculos guardados.";
+    fila.appendChild(celda);
+    tbody.appendChild(fila);
+    return;
+  }
+
+  // Mostrar del más reciente al más antiguo
+  [...historial].reverse().forEach(item => {
+    const fila = document.createElement("tr");
+
+    const tdFecha = document.createElement("td");
+    tdFecha.textContent = item.fecha;
+
+    const tdProducto = document.createElement("td");
+    tdProducto.textContent = item.producto;
+
+    const tdEntrada = document.createElement("td");
+    tdEntrada.textContent = item.entrada;
+
+    const tdResultado = document.createElement("td");
+    tdResultado.textContent = item.resultado;
+
+    fila.appendChild(tdFecha);
+    fila.appendChild(tdProducto);
+    fila.appendChild(tdEntrada);
+    fila.appendChild(tdResultado);
+
+    tbody.appendChild(fila);
   });
 }
 
@@ -245,6 +304,19 @@ document.getElementById("btnCalcular").addEventListener("click", () => {
     }
 
     resultadoDiv.textContent = mensaje;
+
+    // Registrar en historial
+const fecha = new Date().toLocaleString();
+const entradaTexto = `${valor} (unidad base)`;
+historial.push({
+  fecha,
+  producto: producto.nombre,
+  entrada: inputValor.value + " " + unidad,
+  resultado: resultadoDiv.textContent
+});
+guardarHistorial();
+renderHistorial();
+
   } else {
     // volumen (mL) -> masa (g)
     resultado = valor * producto.densidad; // g
@@ -257,6 +329,19 @@ document.getElementById("btnCalcular").addEventListener("click", () => {
     }
 
     resultadoDiv.textContent = mensaje;
+
+    // Registrar en historial
+const fecha = new Date().toLocaleString();
+const entradaTexto = `${valor} (unidad base)`;
+historial.push({
+  fecha,
+  producto: producto.nombre,
+  entrada: inputValor.value + " " + unidad,
+  resultado: resultadoDiv.textContent
+});
+guardarHistorial();
+renderHistorial();
+
   }
 });
 
@@ -269,6 +354,8 @@ function inicializar() {
   renderSelectProductos();
   renderTablaProductos();
   actualizarPlaceholder();
+  cargarHistorial();
+  renderHistorial();
 }
 
 inicializar();
@@ -284,4 +371,13 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
     document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
     document.getElementById(`tab-${tab}`).classList.add("active");
   });
+});
+
+document.getElementById("btnBorrarHistorial").addEventListener("click", () => {
+  const ok = confirm("¿Seguro que quieres borrar todo el historial?");
+  if (!ok) return;
+
+  historial = [];
+  guardarHistorial();
+  renderHistorial();
 });

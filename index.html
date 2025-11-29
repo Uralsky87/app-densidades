@@ -13,6 +13,7 @@
   <nav>
     <button class="tab-btn" data-tab="calc">Calculadora</button>
     <button class="tab-btn" data-tab="productos">Productos</button>
+    <button class="tab-btn" data-tab="historial">Historial</button>
   </nav>
 
   <!-- ================= CALCULADORA ================= -->
@@ -69,6 +70,29 @@
       </table>
     </div>
   </div>
+
+  <!-- ================= HISTORIAL ================= -->
+<div id="tab-historial" class="tab">
+  <div class="card">
+    <h2>Historial de cálculos</h2>
+
+    <button id="btnBorrarHistorial">Borrar historial</button>
+
+    <table id="tablaHistorial">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Producto</th>
+          <th>Entrada</th>
+          <th>Resultado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Aquí se rellena con JS -->
+      </tbody>
+    </table>
+  </div>
+</div>
 
   <script src="app.js"></script>
 </body>

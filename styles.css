@@ -100,3 +100,13 @@ th, td {
   color: #c0392b;
   font-size: 0.95em;
 }
+
+#btnBorrarHistorial {
+  margin-bottom: 15px;
+  background: #ff4d4d;
+  color: white;
+}
+
+#btnBorrarHistorial:hover {
+  background: #ff1a1a;
+}
