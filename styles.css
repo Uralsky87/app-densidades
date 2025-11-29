@@ -74,6 +74,8 @@ td button {
   padding: 6px 10px;
   margin-top: 0;
   font-size: 0.85em;
+  flex: 1;
+  text-align: center;
 }
 
 td button:first-child {
@@ -92,6 +94,13 @@ td button:nth-child(2):hover {
   background: #c0392b;
 }
 
+td:last-child {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
 nav {
   text-align: center;
   margin-bottom: 20px;
@@ -105,11 +114,13 @@ nav {
   cursor: pointer;
   border-radius: 4px 4px 0 0;
   font-weight: bold;
+  color: black; /* ← ahora se ve perfecto */
 }
 
 .tab-btn.active-tab {
   background: #ffffff;
   border-bottom: 2px solid #ffffff;
+  color: black;
 }
 
 .tab-btn:hover {
