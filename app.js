@@ -1,24 +1,24 @@
-console.log("App iniciada (Fase 2 - CRUD en memoria)");
+console.log("App iniciada (Fase 3 - validaciones y UX)");
 
 /* ===========================
-   1. PRODUCTOS EN LOCALSTORAGE
+   1. PRODUCTOS + LOCALSTORAGE
    =========================== */
 
 const LS_KEY = "productos_densidades";
+let productos = [];
 
 // Cargar productos desde localStorage
 function cargarProductos() {
   const guardado = localStorage.getItem(LS_KEY);
 
   if (guardado) {
-    // Si hay datos guardados → los usamos
     productos = JSON.parse(guardado);
   } else {
-    // Primera vez → usar productos por defecto
+    // Productos por defecto
     productos = [
-      { nombre: "Cloruro potásico", densidad: 2.0 },
-      { nombre: "Sodio cloruro", densidad: 2.16 },
-      { nombre: "Potasio acetato", densidad: 1.57 }
+      { nombre: "Cloruro potásico", densidad: 2.0 },   // g/mL
+      { nombre: "Sodio cloruro", densidad: 2.16 },     // g/mL
+      { nombre: "Potasio acetato", densidad: 1.57 }    // g/mL
     ];
   }
 }
@@ -36,15 +36,19 @@ const selectProducto = document.getElementById("producto");
 const tablaProductosBody = document.querySelector("#tablaProductos tbody");
 const btnNuevoProducto = document.getElementById("btnNuevoProducto");
 
+const inputValor = document.getElementById("valor");
+const selectUnidad = document.getElementById("unidad");
+const resultadoDiv = document.getElementById("resultado");
+const errorDiv = document.getElementById("error");
+
 /* ===========================
    3. RENDERIZAR SELECT DE PRODUCTOS
    =========================== */
 
 function renderSelectProductos() {
-  // Limpiamos el select
   selectProducto.innerHTML = "";
 
-  if (productos.length === 0) {
+  if (!productos || productos.length === 0) {
     const option = document.createElement("option");
     option.value = "";
     option.textContent = "No hay productos";
@@ -68,10 +72,9 @@ function renderSelectProductos() {
    =========================== */
 
 function renderTablaProductos() {
-  // Limpiamos el cuerpo de la tabla
   tablaProductosBody.innerHTML = "";
 
-  if (productos.length === 0) {
+  if (!productos || productos.length === 0) {
     const fila = document.createElement("tr");
     const celda = document.createElement("td");
     celda.colSpan = 3;
@@ -130,9 +133,12 @@ btnNuevoProducto.addEventListener("click", () => {
   }
 
   productos.push({ nombre, densidad });
-    guardarProductos();
-    renderSelectProductos();
-    renderTablaProductos();
+  guardarProductos();
+  renderSelectProductos();
+  renderTablaProductos();
+
+  // Seleccionamos automáticamente el último producto añadido
+  selectProducto.value = (productos.length - 1).toString();
 });
 
 // Editar producto
@@ -153,13 +159,14 @@ function editarProducto(index) {
     return;
   }
 
- productos[index] = {
-  nombre: nuevoNombre,
-  densidad: nuevaDensidad
-};
-    guardarProductos();
-    renderSelectProductos();
-    renderTablaProductos();
+  productos[index] = {
+    nombre: nuevoNombre,
+    densidad: nuevaDensidad
+  };
+
+  guardarProductos();
+  renderSelectProductos();
+  renderTablaProductos();
 }
 
 // Eliminar producto
@@ -170,20 +177,40 @@ function eliminarProducto(index) {
   if (!confirmado) return;
 
   productos.splice(index, 1);
-guardarProductos();
-renderSelectProductos();
-renderTablaProductos();
+  guardarProductos();
+  renderSelectProductos();
+  renderTablaProductos();
 }
 
 /* ===========================
-   6. CÁLCULO MASA / VOLUMEN
+   6. PLACEHOLDER SEGÚN UNIDAD
+   =========================== */
+
+function actualizarPlaceholder() {
+  const unidad = selectUnidad.value;
+
+  if (unidad === "g" || unidad === "kg") {
+    inputValor.placeholder = `Introduce masa en ${unidad}`;
+  } else if (unidad === "ml" || unidad === "l") {
+    inputValor.placeholder = `Introduce volumen en ${unidad}`;
+  } else {
+    inputValor.placeholder = "Introduce valor";
+  }
+}
+
+selectUnidad.addEventListener("change", actualizarPlaceholder);
+
+/* ===========================
+   7. CÁLCULO MASA / VOLUMEN
    =========================== */
 
 document.getElementById("btnCalcular").addEventListener("click", () => {
-  const resultadoDiv = document.getElementById("resultado");
+  // Limpiar mensajes anteriores
+  errorDiv.textContent = "";
+  resultadoDiv.textContent = "";
 
-  if (productos.length === 0 || selectProducto.value === "") {
-    resultadoDiv.textContent = "No hay productos disponibles para calcular.";
+  if (!productos || productos.length === 0 || selectProducto.value === "") {
+    errorDiv.textContent = "No hay productos disponibles para calcular.";
     return;
   }
 
@@ -191,11 +218,11 @@ document.getElementById("btnCalcular").addEventListener("click", () => {
   const producto = productos[i];
 
   const tipo = document.getElementById("tipoCalculo").value;
-  let valor = parseFloat(document.getElementById("valor").value);
-  const unidad = document.getElementById("unidad").value;
+  let valor = parseFloat(inputValor.value);
+  const unidad = selectUnidad.value;
 
   if (isNaN(valor) || valor <= 0) {
-    resultadoDiv.textContent = "Introduce un valor válido.";
+    errorDiv.textContent = "Introduce un valor numérico positivo.";
     return;
   }
 
@@ -207,38 +234,54 @@ document.getElementById("btnCalcular").addEventListener("click", () => {
   let resultado;
 
   if (tipo === "masa-a-vol") {
+    // masa (g) -> volumen (mL)
     resultado = valor / producto.densidad; // mL
-    resultadoDiv.textContent = `Volumen: ${resultado.toFixed(2)} mL`;
+    const volumenMl = resultado;
+    let mensaje = `Volumen: ${volumenMl.toFixed(2)} mL`;
+
+    if (volumenMl >= 1000) {
+      const volumenL = volumenMl / 1000;
+      mensaje += ` (${volumenL.toFixed(3)} L)`;
+    }
+
+    resultadoDiv.textContent = mensaje;
   } else {
+    // volumen (mL) -> masa (g)
     resultado = valor * producto.densidad; // g
-    resultadoDiv.textContent = `Masa: ${resultado.toFixed(2)} g`;
+    const masaG = resultado;
+    let mensaje = `Masa: ${masaG.toFixed(2)} g`;
+
+    if (masaG >= 1000) {
+      const masaKg = masaG / 1000;
+      mensaje += ` (${masaKg.toFixed(3)} kg)`;
+    }
+
+    resultadoDiv.textContent = mensaje;
   }
 });
 
 /* ===========================
-   7. INICIALIZACIÓN
+   8. INICIALIZACIÓN
    =========================== */
 
 function inicializar() {
-    cargarProductos();
+  cargarProductos();
   renderSelectProductos();
   renderTablaProductos();
+  actualizarPlaceholder();
 }
 
 inicializar();
 
 /* ===========================
-   8. CAMBIO DE TABS
+   9. CAMBIO DE TABS
    =========================== */
 
 document.querySelectorAll(".tab-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     const tab = btn.dataset.tab;
 
-    // Ocultar todas las pestañas
     document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-
-    // Mostrar pestaña seleccionada
     document.getElementById(`tab-${tab}`).classList.add("active");
   });
 });

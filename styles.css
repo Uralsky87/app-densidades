@@ -91,3 +91,12 @@ th, td {
 #btnNuevoProducto {
   margin-bottom: 15px;
 }
+
+.error {
+  margin-top: 10px;
+  padding: 10px;
+  background: #fdecea;
+  border-left: 4px solid #e74c3c;
+  color: #c0392b;
+  font-size: 0.95em;
+}
