@@ -368,8 +368,14 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     const tab = btn.dataset.tab;
 
+    // Quitar clase activa de todos los tabs
     document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
     document.getElementById(`tab-${tab}`).classList.add("active");
+
+    // Quitar clase activa de todos los botones
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active-tab"));
+    // Activar el botón pulsado
+    btn.classList.add("active-tab");
   });
 });
 

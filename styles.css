@@ -1,21 +1,22 @@
 body {
   font-family: Arial, sans-serif;
-  margin: 20px;
-  background: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+  background: linear-gradient(135deg, #e0f7fa, #f4f4f4);
 }
 
 h1 {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .card {
   background: white;
   padding: 20px;
-  border-radius: 8px;
-  max-width: 400px;
-  margin: 0 auto;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  max-width: 500px;
+  margin: 0 auto 30px auto;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
 }
 
 label {
@@ -28,8 +29,15 @@ input, select, button {
   width: 100%;
   padding: 8px;
   margin-top: 5px;
-  border-radius: 4px;
+  border-radius: 6px;
   border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #0099ff;
+  box-shadow: 0 0 3px rgba(0,153,255,0.6);
 }
 
 button {
@@ -37,6 +45,8 @@ button {
   color: white;
   margin-top: 20px;
   cursor: pointer;
+  border: none;
+  font-weight: bold;
 }
 
 button:hover {
@@ -48,7 +58,31 @@ button:hover {
   padding: 15px;
   background: #e9f7ef;
   border-left: 4px solid #27ae60;
-  font-size: 1.2em;
+  font-size: 1.1em;
+  border-radius: 6px;
+}
+
+td button {
+  width: auto;
+  padding: 6px 10px;
+  margin-top: 0;
+  font-size: 0.85em;
+}
+
+td button:first-child {
+  background: #3498db;
+}
+
+td button:first-child:hover {
+  background: #2980b9;
+}
+
+td button:nth-child(2) {
+  background: #e74c3c;
+}
+
+td button:nth-child(2):hover {
+  background: #c0392b;
 }
 
 nav {
@@ -57,11 +91,18 @@ nav {
 }
 
 .tab-btn {
-  padding: 10px;
+  padding: 10px 16px;
   margin: 0 5px;
   border: none;
   background: #ddd;
   cursor: pointer;
+  border-radius: 4px 4px 0 0;
+  font-weight: bold;
+}
+
+.tab-btn.active-tab {
+  background: #ffffff;
+  border-bottom: 2px solid #ffffff;
 }
 
 .tab-btn:hover {
@@ -109,4 +150,19 @@ th, td {
 
 #btnBorrarHistorial:hover {
   background: #ff1a1a;
+}
+
+#tablaHistorial th, #tablaHistorial td {
+  font-size: 0.9em;
+}
+
+@media (max-width: 600px) {
+  .card {
+    margin: 0 10px 30px 10px;
+    padding: 15px;
+  }
+
+  table {
+    font-size: 0.85em;
+  }
 }
