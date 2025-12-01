@@ -284,3 +284,76 @@ th, td {
   margin-bottom: 10px;
   font-size: 0.95rem;
 }
+
+/* ===== DISOLUCIÓN ===== */
+
+.hint-text {
+  display: block;
+  margin-top: 4px;
+  margin-bottom: 10px;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+#materiasContainer {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.materia-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-end;
+  margin-bottom: 8px;
+}
+
+.materia-campo {
+  flex: 1 1 120px;
+  min-width: 0;
+}
+
+.materia-campo label {
+  font-size: 0.85rem;
+  margin-bottom: 2px;
+  display: block;
+}
+
+.materia-campo input,
+.materia-campo select {
+  width: 100%;
+}
+
+.materia-eliminar {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.materia-eliminar:hover {
+  background: #c0392b;
+}
+
+#btnAnadirMateria {
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+.detalles {
+  margin-top: 10px;
+  padding: 10px;
+  background: #f8f8f8;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  border-left: 3px solid #0099ff;
+}
+
+#btnDetallesDisolucion {
+  margin-top: 10px;
+  width: auto;
+  display: inline-block;
+}
