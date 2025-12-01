@@ -12,18 +12,26 @@
 </head>
 <body>
 
-  <h1>Densidades</h1>
+  <!-- CABECERA CON TÍTULO + BOTÓN INFO -->
+  <header class="app-header">
+    <h1>Densidades</h1>
+    <button id="btnInfo" class="icon-btn" aria-label="Información">i</button>
+  </header>
 
-  <!-- Menú de navegación -->
-  <nav>
-    <button class="tab-btn active-tab" data-tab="calc">Calculadora</button>
-    <button class="tab-btn" data-tab="productos">Productos</button>
-    <button class="tab-btn" data-tab="historial">Historial</button>
-  </nav>
+  <!-- MENÚ PRINCIPAL -->
+  <div id="main-menu" class="card">
+    <h2>Menú principal</h2>
+    <p>Selecciona una opción:</p>
+
+    <button class="menu-btn" data-target="calc">Calculadora</button>
+    <button class="menu-btn" data-target="productos">Productos</button>
+    <button class="menu-btn" data-target="historial">Historial</button>
+  </div>
 
   <!-- ================= CALCULADORA ================= -->
-  <div id="tab-calc" class="tab active">
+  <div id="tab-calc" class="tab">
     <div class="card">
+      <button class="back-btn">← Menú principal</button>
       <h2>Cálculo</h2>
 
       <label for="producto">Producto:</label>
@@ -49,7 +57,7 @@
       <button id="btnCalcular">Calcular</button>
 
       <!-- Mensajes de error-->
-       <div id="error" class="error"></div>
+      <div id="error" class="error"></div>
 
       <!-- Resultado -->
       <div id="resultado" class="resultado"></div>
@@ -59,6 +67,7 @@
   <!-- ================= PRODUCTOS ================= -->
   <div id="tab-productos" class="tab">
     <div class="card">
+      <button class="back-btn">← Menú principal</button>
       <h2>Productos</h2>
 
       <button id="btnNuevoProducto">Añadir producto</button>
@@ -77,35 +86,54 @@
   </div>
 
   <!-- ================= HISTORIAL ================= -->
-<div id="tab-historial" class="tab">
-  <div class="card">
-    <h2>Historial de cálculos</h2>
+  <div id="tab-historial" class="tab">
+    <div class="card">
+      <button class="back-btn">← Menú principal</button>
+      <h2>Historial de cálculos</h2>
 
-    <button id="btnBorrarHistorial">Borrar historial</button>
+      <button id="btnBorrarHistorial">Borrar historial</button>
 
-    <table id="tablaHistorial">
-      <thead>
-        <tr>
-          <th>Fecha</th>
-          <th>Producto</th>
-          <th>Entrada</th>
-          <th>Resultado</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Aquí se rellena con JS -->
-      </tbody>
-    </table>
+      <table id="tablaHistorial">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Producto</th>
+            <th>Entrada</th>
+            <th>Resultado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Aquí se rellena con JS -->
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
+
+  <!-- MODAL DE INFORMACIÓN / CLÁUSULA -->
+  <div id="info-modal" class="modal hidden">
+    <div class="card modal-card">
+      <h2>Información</h2>
+      <p class="info-text">
+        Esta aplicación es una herramienta de apoyo para cálculos de volumen y densidad.
+        Los resultados dependen de la corrección de los datos introducidos por el usuario
+        (densidades, cantidades, unidades, etc.).
+      </p>
+      <p class="info-text">
+        La responsabilidad final de verificar los cálculos y de la preparación recae siempre
+        en el técnico o profesional que realiza la fórmula y en los procedimientos
+        de control del laboratorio.
+      </p>
+      <button id="btnCerrarInfo">Cerrar</button>
+    </div>
+  </div>
 
   <script src="app.js"></script>
-<script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("service-worker.js")
-      .then(() => console.log("SW registrado"))
-      .catch(err => console.error("SW error:", err));
-  }
-</script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js")
+        .then(() => console.log("SW registrado"))
+        .catch(err => console.error("SW error:", err));
+    }
+  </script>
 </body>
 </html>

@@ -14,6 +14,10 @@ let productos = [];
 const LS_HIST = "historial_densidades";
 let historial = [];
 
+/* ===========================
+   CARGA / GUARDADO HISTORIAL
+   =========================== */
+
 function cargarHistorial() {
   const guardado = localStorage.getItem(LS_HIST);
   if (guardado) {
@@ -135,6 +139,10 @@ function renderTablaProductos() {
   });
 }
 
+/* ===========================
+   RENDERIZAR HISTORIAL
+   =========================== */
+
 function renderHistorial() {
   const tbody = document.querySelector("#tablaHistorial tbody");
   tbody.innerHTML = "";
@@ -175,7 +183,7 @@ function renderHistorial() {
 }
 
 /* ===========================
-   5. AÑADIR, EDITAR, ELIMINAR
+   5. AÑADIR, EDITAR, ELIMINAR PRODUCTOS
    =========================== */
 
 // Añadir producto nuevo
@@ -306,16 +314,15 @@ document.getElementById("btnCalcular").addEventListener("click", () => {
     resultadoDiv.textContent = mensaje;
 
     // Registrar en historial
-const fecha = new Date().toLocaleString();
-const entradaTexto = `${valor} (unidad base)`;
-historial.push({
-  fecha,
-  producto: producto.nombre,
-  entrada: inputValor.value + " " + unidad,
-  resultado: resultadoDiv.textContent
-});
-guardarHistorial();
-renderHistorial();
+    const fecha = new Date().toLocaleString();
+    historial.push({
+      fecha,
+      producto: producto.nombre,
+      entrada: inputValor.value + " " + unidad,
+      resultado: resultadoDiv.textContent
+    });
+    guardarHistorial();
+    renderHistorial();
 
   } else {
     // volumen (mL) -> masa (g)
@@ -331,17 +338,15 @@ renderHistorial();
     resultadoDiv.textContent = mensaje;
 
     // Registrar en historial
-const fecha = new Date().toLocaleString();
-const entradaTexto = `${valor} (unidad base)`;
-historial.push({
-  fecha,
-  producto: producto.nombre,
-  entrada: inputValor.value + " " + unidad,
-  resultado: resultadoDiv.textContent
-});
-guardarHistorial();
-renderHistorial();
-
+    const fecha = new Date().toLocaleString();
+    historial.push({
+      fecha,
+      producto: producto.nombre,
+      entrada: inputValor.value + " " + unidad,
+      resultado: resultadoDiv.textContent
+    });
+    guardarHistorial();
+    renderHistorial();
   }
 });
 
@@ -361,29 +366,71 @@ function inicializar() {
 inicializar();
 
 /* ===========================
-   9. CAMBIO DE TABS
+   9. NAVEGACIÓN: MENÚ PRINCIPAL / TABS / INFO
    =========================== */
 
-document.querySelectorAll(".tab-btn").forEach(btn => {
+// Referencias para navegación
+const mainMenu = document.getElementById("main-menu");
+const tabs = document.querySelectorAll(".tab");
+
+// Funciones de navegación
+function mostrarMenuPrincipal() {
+  if (mainMenu) {
+    mainMenu.style.display = "block";
+  }
+  tabs.forEach(t => t.classList.remove("active"));
+}
+
+function abrirTab(nombre) {
+  if (mainMenu) {
+    mainMenu.style.display = "none";
+  }
+  tabs.forEach(t => t.classList.remove("active"));
+  const tab = document.getElementById(`tab-${nombre}`);
+  if (tab) {
+    tab.classList.add("active");
+  }
+}
+
+// Botones del menú principal
+document.querySelectorAll(".menu-btn").forEach(btn => {
   btn.addEventListener("click", () => {
-    const tab = btn.dataset.tab;
-
-    // Quitar clase activa de todos los tabs
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    document.getElementById(`tab-${tab}`).classList.add("active");
-
-    // Quitar clase activa de todos los botones
-    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active-tab"));
-    // Activar el botón pulsado
-    btn.classList.add("active-tab");
+    const target = btn.dataset.target;
+    if (target) abrirTab(target);
   });
 });
 
-document.getElementById("btnBorrarHistorial").addEventListener("click", () => {
-  const ok = confirm("¿Seguro que quieres borrar todo el historial?");
-  if (!ok) return;
-
-  historial = [];
-  guardarHistorial();
-  renderHistorial();
+// Botones de volver
+document.querySelectorAll(".back-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    mostrarMenuPrincipal();
+  });
 });
+
+// Mostrar menú principal al inicio
+mostrarMenuPrincipal();
+
+/* ===========================
+   10. MODAL DE INFORMACIÓN
+   =========================== */
+
+const btnInfo = document.getElementById("btnInfo");
+const infoModal = document.getElementById("info-modal");
+const btnCerrarInfo = document.getElementById("btnCerrarInfo");
+
+if (btnInfo && infoModal && btnCerrarInfo) {
+  btnInfo.addEventListener("click", () => {
+    infoModal.classList.remove("hidden");
+  });
+
+  btnCerrarInfo.addEventListener("click", () => {
+    infoModal.classList.add("hidden");
+  });
+
+  // Cerrar al hacer clic fuera del contenido
+  window.addEventListener("click", (e) => {
+    if (e.target === infoModal) {
+      infoModal.classList.add("hidden");
+    }
+  });
+}
