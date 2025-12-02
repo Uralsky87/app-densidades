@@ -1,4 +1,4 @@
-console.log("App iniciada (Fase 3 - validaciones y UX + Disolución)");
+console.log("App iniciada (Disoluciones + Historial de disoluciones)");
 
 /* ===========================
    1. PRODUCTOS + LOCALSTORAGE
@@ -8,27 +8,47 @@ const LS_KEY = "productos_densidades";
 let productos = [];
 
 /* ===========================
-   HISTORIAL
+   HISTORIAL CÁLCULOS
    =========================== */
 
-const LS_HIST = "historial_densidades";
-let historial = [];
+const LS_HIST_CALC = "historial_densidades";
+let historialCalculos = [];
 
 /* ===========================
-   CARGA / GUARDADO HISTORIAL
+   HISTORIAL DISOLUCIONES
    =========================== */
 
-function cargarHistorial() {
-  const guardado = localStorage.getItem(LS_HIST);
+const LS_HIST_DIS = "historial_disoluciones";
+let historialDisoluciones = [];
+
+/* ===========================
+   CARGA / GUARDADO HISTORIALES
+   =========================== */
+
+function cargarHistorialCalculos() {
+  const guardado = localStorage.getItem(LS_HIST_CALC);
   if (guardado) {
-    historial = JSON.parse(guardado);
+    historialCalculos = JSON.parse(guardado);
   } else {
-    historial = [];
+    historialCalculos = [];
   }
 }
 
-function guardarHistorial() {
-  localStorage.setItem(LS_HIST, JSON.stringify(historial));
+function guardarHistorialCalculos() {
+  localStorage.setItem(LS_HIST_CALC, JSON.stringify(historialCalculos));
+}
+
+function cargarHistorialDisoluciones() {
+  const guardado = localStorage.getItem(LS_HIST_DIS);
+  if (guardado) {
+    historialDisoluciones = JSON.parse(guardado);
+  } else {
+    historialDisoluciones = [];
+  }
+}
+
+function guardarHistorialDisoluciones() {
+  localStorage.setItem(LS_HIST_DIS, JSON.stringify(historialDisoluciones));
 }
 
 // Cargar productos desde localStorage
@@ -75,8 +95,9 @@ const disolucionResultadoDiv = document.getElementById("disolucionResultado");
 const btnCalcularDisolucion = document.getElementById("btnCalcularDisolucion");
 const btnDetallesDisolucion = document.getElementById("btnDetallesDisolucion");
 const detallesDisolucionDiv = document.getElementById("detallesDisolucion");
+const btnResetDisolucion = document.getElementById("btnResetDisolucion");
 
-// Guardaremos aquí los últimos detalles calculados
+// Últimos detalles de una disolución calculada
 let ultimoDetalleDisolucion = [];
 
 /* ===========================
@@ -154,14 +175,16 @@ function renderTablaProductos() {
 }
 
 /* ===========================
-   RENDERIZAR HISTORIAL
+   RENDERIZAR HISTORIAL CÁLCULOS
    =========================== */
 
-function renderHistorial() {
-  const tbody = document.querySelector("#tablaHistorial tbody");
+function renderHistorialCalculos() {
+  const tbody = document.querySelector("#tablaHistorialCalculos tbody");
+  if (!tbody) return;
+
   tbody.innerHTML = "";
 
-  if (historial.length === 0) {
+  if (historialCalculos.length === 0) {
     const fila = document.createElement("tr");
     const celda = document.createElement("td");
     celda.colSpan = 4;
@@ -172,7 +195,7 @@ function renderHistorial() {
   }
 
   // Mostrar del más reciente al más antiguo
-  [...historial].reverse().forEach(item => {
+  [...historialCalculos].reverse().forEach(item => {
     const fila = document.createElement("tr");
 
     const tdFecha = document.createElement("td");
@@ -191,6 +214,53 @@ function renderHistorial() {
     fila.appendChild(tdProducto);
     fila.appendChild(tdEntrada);
     fila.appendChild(tdResultado);
+
+    tbody.appendChild(fila);
+  });
+}
+
+/* ===========================
+   RENDERIZAR HISTORIAL DISOLUCIONES
+   =========================== */
+
+function renderHistorialDisoluciones() {
+  const tbody = document.querySelector("#tablaHistorialDisoluciones tbody");
+  if (!tbody) return;
+
+  tbody.innerHTML = "";
+
+  if (historialDisoluciones.length === 0) {
+    const fila = document.createElement("tr");
+    const celda = document.createElement("td");
+    celda.colSpan = 4;
+    celda.textContent = "No hay disoluciones guardadas.";
+    fila.appendChild(celda);
+    tbody.appendChild(fila);
+    return;
+  }
+
+  [...historialDisoluciones].reverse().forEach(item => {
+    const fila = document.createElement("tr");
+
+    const tdFecha = document.createElement("td");
+    tdFecha.textContent = item.fecha;
+
+    const tdVolumenFinal = document.createElement("td");
+    tdVolumenFinal.textContent = `${item.volumenFinal.toFixed(2)} mL`;
+
+    const tdMaterias = document.createElement("td");
+    const materiasTexto = item.materias
+      .map(m => `${m.nombre} (${m.cantidad} ${m.unidad})`)
+      .join("; ");
+    tdMaterias.textContent = materiasTexto;
+
+    const tdAgua = document.createElement("td");
+    tdAgua.textContent = `${item.volumenAgua.toFixed(2)} mL`;
+
+    fila.appendChild(tdFecha);
+    fila.appendChild(tdVolumenFinal);
+    fila.appendChild(tdMaterias);
+    fila.appendChild(tdAgua);
 
     tbody.appendChild(fila);
   });
@@ -327,16 +397,16 @@ document.getElementById("btnCalcular").addEventListener("click", () => {
 
     resultadoDiv.textContent = mensaje;
 
-    // Registrar en historial
+    // Registrar en historial de cálculos
     const fecha = new Date().toLocaleString();
-    historial.push({
+    historialCalculos.push({
       fecha,
       producto: producto.nombre,
       entrada: inputValor.value + " " + unidad,
       resultado: resultadoDiv.textContent
     });
-    guardarHistorial();
-    renderHistorial();
+    guardarHistorialCalculos();
+    renderHistorialCalculos();
 
   } else {
     // volumen (mL) -> masa (g)
@@ -351,16 +421,16 @@ document.getElementById("btnCalcular").addEventListener("click", () => {
 
     resultadoDiv.textContent = mensaje;
 
-    // Registrar en historial
+    // Registrar en historial de cálculos
     const fecha = new Date().toLocaleString();
-    historial.push({
+    historialCalculos.push({
       fecha,
       producto: producto.nombre,
       entrada: inputValor.value + " " + unidad,
       resultado: resultadoDiv.textContent
     });
-    guardarHistorial();
-    renderHistorial();
+    guardarHistorialCalculos();
+    renderHistorialCalculos();
   }
 });
 
@@ -423,6 +493,20 @@ function crearFilaMateria() {
 if (btnAnadirMateria) {
   btnAnadirMateria.addEventListener("click", () => {
     crearFilaMateria();
+  });
+}
+
+// Reset de disolución
+if (btnResetDisolucion) {
+  btnResetDisolucion.addEventListener("click", () => {
+    inputAguaCsp.value = "";
+    materiasContainer.innerHTML = "";
+    disolucionErrorDiv.textContent = "";
+    disolucionResultadoDiv.textContent = "";
+    btnDetallesDisolucion.classList.add("hidden");
+    detallesDisolucionDiv.classList.add("hidden");
+    detallesDisolucionDiv.innerHTML = "";
+    ultimoDetalleDisolucion = [];
   });
 }
 
@@ -521,6 +605,17 @@ if (btnCalcularDisolucion) {
     // Guardamos detalle para el botón "Detalles"
     ultimoDetalleDisolucion = detalles;
     btnDetallesDisolucion.classList.remove("hidden");
+
+    // Registrar en historial de disoluciones
+    const fecha = new Date().toLocaleString();
+    historialDisoluciones.push({
+      fecha,
+      volumenFinal,
+      volumenAgua,
+      materias: detalles
+    });
+    guardarHistorialDisoluciones();
+    renderHistorialDisoluciones();
   });
 }
 
@@ -558,8 +653,12 @@ function inicializar() {
   renderSelectProductos();
   renderTablaProductos();
   actualizarPlaceholder();
-  cargarHistorial();
-  renderHistorial();
+
+  cargarHistorialCalculos();
+  renderHistorialCalculos();
+
+  cargarHistorialDisoluciones();
+  renderHistorialDisoluciones();
 }
 
 inicializar();
@@ -610,7 +709,58 @@ document.querySelectorAll(".back-btn").forEach(btn => {
 mostrarMenuPrincipal();
 
 /* ===========================
-   11. MODAL DE INFORMACIÓN
+   11. SUBPestañas de HISTORIAL
+   =========================== */
+
+const subtabButtons = document.querySelectorAll(".subtab-btn");
+const subtabPanels = document.querySelectorAll(".subtab-panel");
+
+subtabButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const target = btn.dataset.subtab;
+    if (!target) return;
+
+    subtabButtons.forEach(b => b.classList.remove("active-subtab"));
+    subtabPanels.forEach(p => p.classList.remove("active-subtab-panel"));
+
+    btn.classList.add("active-subtab");
+    const panel = document.getElementById(`subtab-${target}`);
+    if (panel) {
+      panel.classList.add("active-subtab-panel");
+    }
+  });
+});
+
+/* ===========================
+   12. BOTONES BORRAR HISTORIALES
+   =========================== */
+
+const btnBorrarHistCal = document.getElementById("btnBorrarHistorialCalculos");
+if (btnBorrarHistCal) {
+  btnBorrarHistCal.addEventListener("click", () => {
+    const ok = confirm("¿Seguro que quieres borrar todo el historial de cálculos?");
+    if (!ok) return;
+
+    historialCalculos = [];
+    guardarHistorialCalculos();
+    renderHistorialCalculos();
+  });
+}
+
+const btnBorrarHistDis = document.getElementById("btnBorrarHistorialDisoluciones");
+if (btnBorrarHistDis) {
+  btnBorrarHistDis.addEventListener("click", () => {
+    const ok = confirm("¿Seguro que quieres borrar todo el historial de disoluciones?");
+    if (!ok) return;
+
+    historialDisoluciones = [];
+    guardarHistorialDisoluciones();
+    renderHistorialDisoluciones();
+  });
+}
+
+/* ===========================
+   13. MODAL DE INFORMACIÓN
    =========================== */
 
 const btnInfo = document.getElementById("btnInfo");
@@ -631,5 +781,110 @@ if (btnInfo && infoModal && btnCerrarInfo) {
     if (e.target === infoModal) {
       infoModal.classList.add("hidden");
     }
+  });
+}
+
+/* ===========================
+   14. EXPORTAR / IMPORTAR DATOS
+   =========================== */
+
+const btnExportarDatos = document.getElementById("btnExportarDatos");
+const btnImportarDatos = document.getElementById("btnImportarDatos");
+const inputImportarDatos = document.getElementById("inputImportarDatos");
+
+// EXPORTAR DATOS
+if (btnExportarDatos && inputImportarDatos) {
+  btnExportarDatos.addEventListener("click", () => {
+    const ok = confirm("¿Quieres guardar una copia de los datos?");
+    if (!ok) return;
+
+    // Construimos el objeto con todo lo importante
+    const backup = {
+      version: 1,
+      fechaExportacion: new Date().toISOString(),
+      productos,
+      historialCalculos,
+      historialDisoluciones
+    };
+
+    const json = JSON.stringify(backup, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    const hoy = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    a.href = url;
+    a.download = `densidades-backup-${hoy}.json`;
+
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    alert("Exportación iniciada.\nRevisa tus descargas para guardar el archivo.");
+  });
+}
+
+// IMPORTAR DATOS
+if (btnImportarDatos && inputImportarDatos) {
+  btnImportarDatos.addEventListener("click", () => {
+    const ok = confirm("¿Quieres importar datos desde un archivo?\nSe sobrescribirán los datos actuales.");
+    if (!ok) return;
+
+    inputImportarDatos.value = ""; // reset por si se importa dos veces el mismo archivo
+    inputImportarDatos.click();
+  });
+
+  inputImportarDatos.addEventListener("change", (event) => {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const contenido = e.target.result;
+        const data = JSON.parse(contenido);
+
+        if (!data || typeof data !== "object") {
+          alert("El archivo no contiene datos válidos.");
+          return;
+        }
+
+        // Productos
+        if (Array.isArray(data.productos)) {
+          productos = data.productos;
+          guardarProductos();
+          renderSelectProductos();
+          renderTablaProductos();
+        }
+
+        // Historial de cálculos
+        if (Array.isArray(data.historialCalculos)) {
+          historialCalculos = data.historialCalculos;
+          guardarHistorialCalculos();
+          renderHistorialCalculos();
+        }
+
+        // Historial de disoluciones
+        if (Array.isArray(data.historialDisoluciones)) {
+          historialDisoluciones = data.historialDisoluciones;
+          guardarHistorialDisoluciones();
+          renderHistorialDisoluciones();
+        }
+
+        // Limpiar estado de disolución actual para evitar datos "raros"
+        if (btnResetDisolucion) {
+          btnResetDisolucion.click();
+        }
+
+        alert("Datos importados correctamente.");
+
+      } catch (err) {
+        console.error("Error al importar datos:", err);
+        alert("No se ha podido leer el archivo. Asegúrate de que es un backup válido de la aplicación.");
+      }
+    };
+
+    reader.readAsText(file);
   });
 }

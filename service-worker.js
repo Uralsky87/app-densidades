@@ -1,4 +1,4 @@
-const CACHE_NAME = "densidades-cache-v1";
+const CACHE_NAME = "densidades-cache-v2";
 const URLS_TO_CACHE = [
   "./",
   "./index.html",

@@ -27,6 +27,15 @@
     <button class="menu-btn" data-target="disolucion">Disolución</button>
     <button class="menu-btn" data-target="productos">Productos</button>
     <button class="menu-btn" data-target="historial">Historial</button>
+
+    <hr class="menu-separator">
+
+    <h3>Datos</h3>
+    <button id="btnExportarDatos" class="menu-btn">Exportar datos</button>
+    <button id="btnImportarDatos" class="menu-btn small-btn">Importar datos</button>
+
+    <!-- input oculto para seleccionar el archivo de importación -->
+    <input type="file" id="inputImportarDatos" accept="application/json" style="display:none" />
   </div>
 
   <!-- ================= CALCULADORA ================= -->
@@ -71,6 +80,8 @@
       <button class="back-btn">← Menú principal</button>
       <h2>Disolución</h2>
 
+      <button id="btnResetDisolucion" type="button">Reset</button>
+
       <label for="aguaCsp">Volumen final CSP de agua:</label>
       <input type="number" id="aguaCsp" placeholder="Volumen total final en mL" />
       <small class="hint-text">El volumen final de la disolución se expresa en mL.</small>
@@ -114,27 +125,55 @@
     </div>
   </div>
 
-  <!-- ================= HISTORIAL ================= -->
+   <!-- ================= HISTORIAL ================= -->
   <div id="tab-historial" class="tab">
     <div class="card">
       <button class="back-btn">← Menú principal</button>
-      <h2>Historial de cálculos</h2>
+      <h2>Historial</h2>
 
-      <button id="btnBorrarHistorial">Borrar historial</button>
+      <nav class="subnav">
+        <button class="subtab-btn active-subtab" data-subtab="calculos">Cálculos</button>
+        <button class="subtab-btn" data-subtab="disoluciones">Disoluciones</button>
+      </nav>
 
-      <table id="tablaHistorial">
-        <thead>
-          <tr>
-            <th>Fecha</th>
-            <th>Producto</th>
-            <th>Entrada</th>
-            <th>Resultado</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Aquí se rellena con JS -->
-        </tbody>
-      </table>
+      <!-- Subpestaña: Historial de cálculos -->
+      <div id="subtab-calculos" class="subtab-panel active-subtab-panel">
+        <button id="btnBorrarHistorialCalculos">Borrar historial</button>
+
+        <table id="tablaHistorialCalculos">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Producto</th>
+              <th>Entrada</th>
+              <th>Resultado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Aquí se rellena con JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Subpestaña: Historial de disoluciones -->
+      <div id="subtab-disoluciones" class="subtab-panel">
+        <button id="btnBorrarHistorialDisoluciones">Borrar historial de disoluciones</button>
+
+        <table id="tablaHistorialDisoluciones">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Volumen final</th>
+              <th>Materias primas</th>
+              <th>Agua CSP</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Aquí se rellena con JS -->
+          </tbody>
+        </table>
+      </div>
+
     </div>
   </div>
 

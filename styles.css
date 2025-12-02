@@ -357,3 +357,61 @@ th, td {
   width: auto;
   display: inline-block;
 }
+
+/* ===== SUBPestañas dentro de Historial ===== */
+
+.subnav {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.subtab-btn {
+  padding: 8px 12px;
+  border: none;
+  background: #ddd;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.subtab-btn.active-subtab {
+  background: #0099ff;
+  color: #fff;
+}
+
+.subtab-panel {
+  display: none;
+}
+
+.subtab-panel.active-subtab-panel {
+  display: block;
+}
+
+/* Ajuste para el botón Reset de Disolución */
+#btnResetDisolucion {
+  width: auto;
+  display: inline-block;
+  margin-bottom: 10px;
+  background: #eeeeee;
+  color: #333;
+}
+
+#btnResetDisolucion:hover {
+  background: #dddddd;
+}
+
+/* Separador en el menú principal */
+.menu-separator {
+  margin: 16px 0;
+  border: none;
+  border-top: 1px solid #ddd;
+}
+
+/* Botón un poco más discreto para "Importar" */
+.small-btn {
+  font-size: 0.9rem;
+  padding: 8px 12px;
+}
