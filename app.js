@@ -110,7 +110,7 @@ function renderSelectProductos() {
   if (!productos || productos.length === 0) {
     const option = document.createElement("option");
     option.value = "";
-    option.textContent = "No hay productos";
+    option.textContent = "No hay materias primas";
     selectProducto.appendChild(option);
     selectProducto.disabled = true;
     return;
@@ -272,7 +272,7 @@ function renderHistorialDisoluciones() {
 
 // Añadir producto nuevo
 btnNuevoProducto.addEventListener("click", () => {
-  const nombre = prompt("Nombre del producto:");
+  const nombre = prompt("Nombre de la materia prima:");
   if (!nombre) return;
 
   const densidadStr = prompt("Densidad en g/mL (solo número, por ejemplo 2.16):");
@@ -296,7 +296,7 @@ btnNuevoProducto.addEventListener("click", () => {
 function editarProducto(index) {
   const producto = productos[index];
 
-  const nuevoNombre = prompt("Nuevo nombre del producto:", producto.nombre);
+  const nuevoNombre = prompt("Nuevo nombre de la materia prima:", producto.nombre);
   if (!nuevoNombre) return;
 
   const densidadStr = prompt(
@@ -361,7 +361,7 @@ document.getElementById("btnCalcular").addEventListener("click", () => {
   resultadoDiv.textContent = "";
 
   if (!productos || productos.length === 0 || selectProducto.value === "") {
-    errorDiv.textContent = "No hay productos disponibles para calcular.";
+    errorDiv.textContent = "No hay materias primas disponibles para calcular.";
     return;
   }
 
@@ -440,7 +440,7 @@ document.getElementById("btnCalcular").addEventListener("click", () => {
 
 function crearFilaMateria() {
   if (!productos || productos.length === 0) {
-    alert("No hay productos definidos. Añádelos en la sección Productos.");
+    alert("No hay productos definidos. Añádelos en la sección Materias primas.");
     return;
   }
 
@@ -453,22 +453,22 @@ function crearFilaMateria() {
   fila.classList.add("materia-row");
 
   fila.innerHTML = `
-    <div class="materia-campo">
-      <label>Producto</label>
+    <div class="materia-campo materia-producto-campo">
+      <label>Materia prima</label>
       <select class="materia-producto"></select>
     </div>
-    <div class="materia-campo">
+    <div class="materia-campo materia-cantidad-campo">
       <label>Cantidad</label>
       <input type="number" class="materia-cantidad" placeholder="Valor" />
     </div>
-    <div class="materia-campo">
+    <div class="materia-campo materia-unidad-campo">
       <label>Unidad</label>
       <select class="materia-unidad">
         <option value="g">g</option>
         <option value="ml">mL</option>
       </select>
     </div>
-    <button type="button" class="materia-eliminar">X</button>
+    <button type="button" class="materia-eliminar">Eliminar materia prima</button>
   `;
 
   // Rellenar selector de producto
@@ -544,7 +544,7 @@ if (btnCalcularDisolucion) {
 
       const indiceProd = parseInt(selectProd.value, 10);
       if (isNaN(indiceProd) || indiceProd < 0 || indiceProd >= productos.length) {
-        disolucionErrorDiv.textContent = "Alguna materia prima tiene un producto no válido.";
+        disolucionErrorDiv.textContent = "Alguna materia prima no es válida.";
         return;
       }
 
@@ -562,7 +562,7 @@ if (btnCalcularDisolucion) {
       if (unidad === "g") {
         // volumen = masa / densidad
         if (producto.densidad <= 0) {
-          disolucionErrorDiv.textContent = `La densidad del producto "${producto.nombre}" no es válida.`;
+          disolucionErrorDiv.textContent = `La densidad de la materia prima "${producto.nombre}" no es válida.`;
           return;
         }
         volumenMl = cantidad / producto.densidad;
