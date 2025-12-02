@@ -785,6 +785,208 @@ if (btnInfo && infoModal && btnCerrarInfo) {
 }
 
 /* ===========================
+   15. CALCULADORA RÁPIDA
+   =========================== */
+
+const calcDisplay = document.getElementById("calcDisplay");
+const calcHistoryUl = document.getElementById("calcHistory");
+const calcNumButtons = document.querySelectorAll("[data-calc-num]");
+const calcDotButton = document.getElementById("calcDot");
+const calcClearButton = document.getElementById("calcClear");
+const calcOpButtons = document.querySelectorAll("[data-calc-op]");
+const calcEqualsButton = document.getElementById("calcEquals");
+
+let calcCurrent = "0";
+let calcPrevious = null;
+let calcOperator = null;
+let calcJustCalculated = false;
+let calcHistoryList = [];
+
+function updateCalcDisplay() {
+  if (calcDisplay) {
+    calcDisplay.textContent = calcCurrent;
+  }
+}
+
+function renderCalcHistory() {
+  if (!calcHistoryUl) return;
+
+  calcHistoryUl.innerHTML = "";
+
+  if (calcHistoryList.length === 0) {
+    const li = document.createElement("li");
+    li.textContent = "No hay operaciones todavía.";
+    li.classList.add("calc-history-empty");
+    calcHistoryUl.appendChild(li);
+    return;
+  }
+
+  // Mostrar de la más reciente a la más antigua
+  [...calcHistoryList].reverse().forEach(linea => {
+    const li = document.createElement("li");
+    li.textContent = linea;
+    calcHistoryUl.appendChild(li);
+  });
+}
+
+function addCalcHistory(a, op, b, res) {
+  const linea = `${a} ${op} ${b} = ${res}`;
+  calcHistoryList.push(linea);
+  if (calcHistoryList.length > 20) {
+    calcHistoryList.shift(); // mantener hasta 20
+  }
+  renderCalcHistory();
+}
+
+function appendDigit(d) {
+  if (calcJustCalculated) {
+    calcCurrent = d;
+    calcJustCalculated = false;
+  } else if (calcCurrent === "0") {
+    calcCurrent = d;
+  } else {
+    calcCurrent += d;
+  }
+  updateCalcDisplay();
+}
+
+function appendDot() {
+  if (calcJustCalculated) {
+    calcCurrent = "0.";
+    calcJustCalculated = false;
+    updateCalcDisplay();
+    return;
+  }
+  if (!calcCurrent.includes(".")) {
+    calcCurrent += ".";
+    updateCalcDisplay();
+  }
+}
+
+function clearCalc() {
+  calcCurrent = "0";
+  calcPrevious = null;
+  calcOperator = null;
+  calcJustCalculated = false;
+  updateCalcDisplay();
+  // El historial NO se borra con C, solo la pantalla
+}
+
+function computeOperation(a, b, op) {
+  switch (op) {
+    case "+": return a + b;
+    case "-": return a - b;
+    case "*": return a * b;
+    case "/": return b === 0 ? NaN : a / b;
+    default: return b;
+  }
+}
+
+function handleOperator(op) {
+  const currentVal = parseFloat(calcCurrent);
+
+  if (isNaN(currentVal)) {
+    return;
+  }
+
+  if (calcOperator && calcPrevious !== null && !calcJustCalculated) {
+    // Resolver operación anterior encadenada
+    const res = computeOperation(calcPrevious, currentVal, calcOperator);
+    if (!isFinite(res)) {
+      calcCurrent = "Error";
+      calcPrevious = null;
+      calcOperator = null;
+      calcJustCalculated = true;
+      updateCalcDisplay();
+      return;
+    }
+    addCalcHistory(calcPrevious, calcOperator, currentVal, res);
+    calcPrevious = res;
+    calcCurrent = String(res);
+  } else {
+    calcPrevious = currentVal;
+  }
+
+  calcOperator = op;
+  calcJustCalculated = true;
+  updateCalcDisplay();
+}
+
+function handleEquals() {
+  if (!calcOperator || calcPrevious === null) {
+    return;
+  }
+
+  const currentVal = parseFloat(calcCurrent);
+  if (isNaN(currentVal)) return;
+
+  const res = computeOperation(calcPrevious, currentVal, calcOperator);
+  if (!isFinite(res)) {
+    calcCurrent = "Error";
+    calcPrevious = null;
+    calcOperator = null;
+    calcJustCalculated = true;
+    updateCalcDisplay();
+    return;
+  }
+
+  addCalcHistory(calcPrevious, calcOperator, currentVal, res);
+
+  // El resultado pasa a ser la nueva pantalla, y se puede seguir operando sobre él
+  calcCurrent = String(res);
+  calcPrevious = res;
+  calcJustCalculated = true;
+  calcOperator = null; // se puede elegir nuevo operador
+  updateCalcDisplay();
+}
+
+// Listeners
+
+if (calcNumButtons && calcNumButtons.length > 0) {
+  calcNumButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const d = btn.getAttribute("data-calc-num");
+      if (d !== null) appendDigit(d);
+    });
+  });
+}
+
+if (calcDotButton) {
+  calcDotButton.addEventListener("click", () => {
+    appendDot();
+  });
+}
+
+if (calcClearButton) {
+  calcClearButton.addEventListener("click", () => {
+    clearCalc();
+  });
+}
+
+if (calcOpButtons && calcOpButtons.length > 0) {
+  calcOpButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const op = btn.getAttribute("data-calc-op");
+      if (op) {
+        handleOperator(op);
+      }
+    });
+  });
+}
+
+if (calcEqualsButton) {
+  calcEqualsButton.addEventListener("click", () => {
+    handleEquals();
+  });
+}
+
+// Estado inicial
+if (calcDisplay) {
+  updateCalcDisplay();
+  renderCalcHistory();
+}
+
+/* ===========================
    14. EXPORTAR / IMPORTAR DATOS
    =========================== */
 

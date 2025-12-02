@@ -28,6 +28,11 @@
     <button class="menu-btn" data-target="productos">Materias primas</button>
     <button class="menu-btn" data-target="historial">Historial</button>
 
+    <!-- Botón especial para la calculadora rápida -->
+    <button class="menu-btn menu-btn-small menu-btn-green" data-target="calcrapida">
+      Calc rápida
+    </button>
+
     <hr class="menu-separator">
 
     <h3>Datos</h3>
@@ -101,6 +106,51 @@
 
       <button id="btnDetallesDisolucion" type="button" class="hidden">Detalles</button>
       <div id="detallesDisolucion" class="detalles hidden"></div>
+    </div>
+  </div>
+
+  <!-- ================= CALC RÁPIDA ================= -->
+  <div id="tab-calcrapida" class="tab">
+    <div class="card">
+      <button class="back-btn">← Menú principal</button>
+      <h2>Calc rápida</h2>
+
+      <!-- Pantalla de la calculadora -->
+      <div id="calcDisplay" class="calc-display">0</div>
+
+      <!-- Layout: teclado numérico + operaciones a la derecha -->
+      <div class="calc-layout">
+        <div class="calc-keypad">
+          <button class="calc-btn" data-calc-num="7">7</button>
+          <button class="calc-btn" data-calc-num="8">8</button>
+          <button class="calc-btn" data-calc-num="9">9</button>
+
+          <button class="calc-btn" data-calc-num="4">4</button>
+          <button class="calc-btn" data-calc-num="5">5</button>
+          <button class="calc-btn" data-calc-num="6">6</button>
+
+          <button class="calc-btn" data-calc-num="1">1</button>
+          <button class="calc-btn" data-calc-num="2">2</button>
+          <button class="calc-btn" data-calc-num="3">3</button>
+
+          <button class="calc-btn" id="calcDot">.</button>
+          <button class="calc-btn" data-calc-num="0">0</button>
+          <button class="calc-btn calc-clear-btn" id="calcClear">C</button>
+        </div>
+
+        <div class="calc-ops">
+          <button class="calc-op-btn" data-calc-op="+">+</button>
+          <button class="calc-op-btn" data-calc-op="-">−</button>
+          <button class="calc-op-btn" data-calc-op="*">×</button>
+          <button class="calc-op-btn" data-calc-op="/">÷</button>
+          <button class="calc-op-btn calc-equals-btn" id="calcEquals">=</button>
+        </div>
+      </div>
+
+      <h3>Historial</h3>
+      <ul id="calcHistory" class="calc-history">
+        <li class="calc-history-empty">No hay operaciones todavía.</li>
+      </ul>
     </div>
   </div>
 

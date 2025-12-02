@@ -455,3 +455,135 @@ th, td {
   word-wrap: break-word;
   white-space: normal;
 }
+
+/* ===== Botón especial Calc rápida en menú ===== */
+
+.menu-btn-small {
+  width: auto;
+  display: inline-block;
+  margin-top: 10px;
+  padding: 8px 16px;
+  font-size: 0.95rem;
+}
+
+.menu-btn-green {
+  background: #2ecc71;
+  color: #ffffff;
+}
+
+.menu-btn-green:hover {
+  background: #27ae60;
+}
+
+/* ===== Calculadora rápida ===== */
+
+.calc-display {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #ffffff;
+  font-size: 1.4rem;
+  text-align: right;
+  min-height: 40px;
+  box-sizing: border-box;
+  word-wrap: break-word;
+}
+
+.calc-layout {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.calc-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  flex: 1 1 auto;
+}
+
+.calc-btn,
+.calc-op-btn {
+  padding: 10px;
+  font-size: 1.2rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #f2f2f2;
+  cursor: pointer;
+}
+
+.calc-btn:active,
+.calc-op-btn:active {
+  transform: translateY(1px);
+}
+
+.calc-clear-btn {
+  background: #ffdddd;
+}
+
+.calc-clear-btn:hover {
+  background: #ffcccc;
+}
+
+.calc-ops {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 0 0 60px;
+}
+
+.calc-op-btn {
+  background: #e6f2ff;
+}
+
+.calc-op-btn:hover {
+  background: #cce5ff;
+}
+
+.calc-equals-btn {
+  background: #0099ff;
+  color: #ffffff;
+}
+
+.calc-equals-btn:hover {
+  background: #007acc;
+}
+
+/* Historial de la calculadora */
+
+.calc-history {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 8px;
+  max-height: 150px;
+  overflow-y: auto;
+  font-size: 0.9rem;
+}
+
+.calc-history li {
+  padding: 2px 0;
+}
+
+.calc-history-empty {
+  color: #777;
+}
+
+/* Ajuste para pantallas pequeñas */
+
+@media (max-width: 480px) {
+  .calc-layout {
+    gap: 6px;
+  }
+
+  .calc-ops {
+    flex: 0 0 55px;
+  }
+
+  .calc-btn,
+  .calc-op-btn {
+    padding: 8px;
+    font-size: 1.05rem;
+  }
+}
