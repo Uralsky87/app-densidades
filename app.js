@@ -60,10 +60,14 @@ function cargarProductos() {
   } else {
     // Productos por defecto
     productos = [
-      { nombre: "Cloruro potásico", densidad: 2.0 },   // g/mL
-      { nombre: "Sodio cloruro", densidad: 2.16 },     // g/mL
-      { nombre: "Potasio acetato", densidad: 1.57 }    // g/mL
-    ];
+  { nombre: "Sodio cloruro", densidad: 3.33 },     // g/mL
+  { nombre: "Calcio gluconato", densidad: 1.00 },  // g/mL
+  { nombre: "Potasio acetato", densidad: 4.35 },   // g/mL
+  { nombre: "Manitol", densidad: 1.67 },           // g/mL
+  { nombre: "Sodio acetato", densidad: 5.56 },     // g/mL
+  { nombre: "Lisina HCl", densidad: 1.54 },        // g/mL
+  { nombre: "Arginina HCl", densidad: 1.43 }       // g/mL
+];
   }
 }
 
