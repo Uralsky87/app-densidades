@@ -58,16 +58,8 @@ function cargarProductos() {
   if (guardado) {
     productos = JSON.parse(guardado);
   } else {
-    // Productos por defecto
-    productos = [
-  { nombre: "Sodio cloruro", densidad: 3.33 },     // g/mL
-  { nombre: "Calcio gluconato", densidad: 1.00 },  // g/mL
-  { nombre: "Potasio acetato", densidad: 4.35 },   // g/mL
-  { nombre: "Manitol", densidad: 1.67 },           // g/mL
-  { nombre: "Sodio acetato", densidad: 5.56 },     // g/mL
-  { nombre: "Lisina HCl", densidad: 1.54 },        // g/mL
-  { nombre: "Arginina HCl", densidad: 1.43 }       // g/mL
-];
+    // Sin productos por defecto: el usuario los introduce
+    productos = [];
   }
 }
 
@@ -83,11 +75,20 @@ function guardarProductos() {
 const selectProducto = document.getElementById("producto");
 const tablaProductosBody = document.querySelector("#tablaProductos tbody");
 const btnNuevoProducto = document.getElementById("btnNuevoProducto");
+const tablaHistorialCalculosBody = document.querySelector("#tablaHistorialCalculos tbody");
+const tablaHistorialDisolucionesBody = document.querySelector("#tablaHistorialDisoluciones tbody");
 
 const inputValor = document.getElementById("valor");
-const selectUnidad = document.getElementById("unidad");
 const resultadoDiv = document.getElementById("resultado");
 const errorDiv = document.getElementById("error");
+
+const btnMateriaManual = document.getElementById("btnMateriaManual");
+const materiaManualInfo = document.getElementById("materiaManualInfo");
+const materiaManualText = document.getElementById("materiaManualText");
+const btnEliminarMateriaManual = document.getElementById("btnEliminarMateriaManual");
+
+let materiaManual = null;
+let bloqueoSeleccionProducto = false;
 
 /* ===== Disolución: referencias ===== */
 
@@ -128,6 +129,10 @@ function renderSelectProductos() {
     option.textContent = `${p.nombre} (${p.densidad} g/mL)`;
     selectProducto.appendChild(option);
   });
+
+  if (bloqueoSeleccionProducto) {
+    selectProducto.disabled = true;
+  }
 }
 
 /* ===========================
@@ -147,6 +152,7 @@ function renderTablaProductos() {
     return;
   }
 
+  const fragment = document.createDocumentFragment();
   productos.forEach((p, index) => {
     const fila = document.createElement("tr");
 
@@ -174,8 +180,10 @@ function renderTablaProductos() {
     fila.appendChild(tdDensidad);
     fila.appendChild(tdAcciones);
 
-    tablaProductosBody.appendChild(fila);
+    fragment.appendChild(fila);
   });
+
+  tablaProductosBody.appendChild(fragment);
 }
 
 /* ===========================
@@ -183,7 +191,7 @@ function renderTablaProductos() {
    =========================== */
 
 function renderHistorialCalculos() {
-  const tbody = document.querySelector("#tablaHistorialCalculos tbody");
+  const tbody = tablaHistorialCalculosBody;
   if (!tbody) return;
 
   tbody.innerHTML = "";
@@ -198,6 +206,7 @@ function renderHistorialCalculos() {
     return;
   }
 
+  const fragment = document.createDocumentFragment();
   // Mostrar del más reciente al más antiguo
   [...historialCalculos].reverse().forEach(item => {
     const fila = document.createElement("tr");
@@ -219,8 +228,10 @@ function renderHistorialCalculos() {
     fila.appendChild(tdEntrada);
     fila.appendChild(tdResultado);
 
-    tbody.appendChild(fila);
+    fragment.appendChild(fila);
   });
+
+  tbody.appendChild(fragment);
 }
 
 /* ===========================
@@ -228,7 +239,7 @@ function renderHistorialCalculos() {
    =========================== */
 
 function renderHistorialDisoluciones() {
-  const tbody = document.querySelector("#tablaHistorialDisoluciones tbody");
+  const tbody = tablaHistorialDisolucionesBody;
   if (!tbody) return;
 
   tbody.innerHTML = "";
@@ -243,6 +254,7 @@ function renderHistorialDisoluciones() {
     return;
   }
 
+  const fragment = document.createDocumentFragment();
   [...historialDisoluciones].reverse().forEach(item => {
     const fila = document.createElement("tr");
 
@@ -266,8 +278,10 @@ function renderHistorialDisoluciones() {
     fila.appendChild(tdMaterias);
     fila.appendChild(tdAgua);
 
-    tbody.appendChild(fila);
+    fragment.appendChild(fila);
   });
+
+  tbody.appendChild(fragment);
 }
 
 /* ===========================
@@ -338,24 +352,6 @@ function eliminarProducto(index) {
 }
 
 /* ===========================
-   6. PLACEHOLDER SEGÚN UNIDAD
-   =========================== */
-
-function actualizarPlaceholder() {
-  const unidad = selectUnidad.value;
-
-  if (unidad === "g" || unidad === "kg") {
-    inputValor.placeholder = `Introduce masa en ${unidad}`;
-  } else if (unidad === "ml" || unidad === "l") {
-    inputValor.placeholder = `Introduce volumen en ${unidad}`;
-  } else {
-    inputValor.placeholder = "Introduce valor";
-  }
-}
-
-selectUnidad.addEventListener("change", actualizarPlaceholder);
-
-/* ===========================
    7. CÁLCULO MASA / VOLUMEN
    =========================== */
 
@@ -364,79 +360,122 @@ document.getElementById("btnCalcular").addEventListener("click", () => {
   errorDiv.textContent = "";
   resultadoDiv.textContent = "";
 
-  if (!productos || productos.length === 0 || selectProducto.value === "") {
+  const producto = obtenerProductoParaCalculo();
+  if (!producto) {
     errorDiv.textContent = "No hay materias primas disponibles para calcular.";
     return;
   }
 
-  const i = parseInt(selectProducto.value, 10);
-  const producto = productos[i];
-
-  const tipo = document.getElementById("tipoCalculo").value;
   let valor = parseFloat(inputValor.value);
-  const unidad = selectUnidad.value;
 
   if (isNaN(valor) || valor <= 0) {
     errorDiv.textContent = "Introduce un valor numérico positivo.";
     return;
   }
 
-  // Pasamos todo a unidades base: g y mL
-  if (unidad === "kg") valor = valor * 1000;
-  if (unidad === "l") valor = valor * 1000;
-  // g y mL ya están en base
+  // masa (g) -> volumen (mL)
+  const volumenMl = valor / producto.densidad;
+  let mensaje = `Volumen: ${volumenMl.toFixed(2)} mL`;
 
-  let resultado;
-
-  if (tipo === "masa-a-vol") {
-    // masa (g) -> volumen (mL)
-    resultado = valor / producto.densidad; // mL
-    const volumenMl = resultado;
-    let mensaje = `Volumen: ${volumenMl.toFixed(2)} mL`;
-
-    if (volumenMl >= 1000) {
-      const volumenL = volumenMl / 1000;
-      mensaje += ` (${volumenL.toFixed(3)} L)`;
-    }
-
-    resultadoDiv.textContent = mensaje;
-
-    // Registrar en historial de cálculos
-    const fecha = new Date().toLocaleString();
-    historialCalculos.push({
-      fecha,
-      producto: producto.nombre,
-      entrada: inputValor.value + " " + unidad,
-      resultado: resultadoDiv.textContent
-    });
-    guardarHistorialCalculos();
-    renderHistorialCalculos();
-
-  } else {
-    // volumen (mL) -> masa (g)
-    resultado = valor * producto.densidad; // g
-    const masaG = resultado;
-    let mensaje = `Masa: ${masaG.toFixed(2)} g`;
-
-    if (masaG >= 1000) {
-      const masaKg = masaG / 1000;
-      mensaje += ` (${masaKg.toFixed(3)} kg)`;
-    }
-
-    resultadoDiv.textContent = mensaje;
-
-    // Registrar en historial de cálculos
-    const fecha = new Date().toLocaleString();
-    historialCalculos.push({
-      fecha,
-      producto: producto.nombre,
-      entrada: inputValor.value + " " + unidad,
-      resultado: resultadoDiv.textContent
-    });
-    guardarHistorialCalculos();
-    renderHistorialCalculos();
+  if (volumenMl >= 1000) {
+    const volumenL = volumenMl / 1000;
+    mensaje += ` (${volumenL.toFixed(3)} L)`;
   }
+
+  resultadoDiv.textContent = mensaje;
+  registrarCalculo(producto, "g");
 });
+
+function registrarCalculo(producto, unidad) {
+  const fecha = new Date().toLocaleString();
+  historialCalculos.push({
+    fecha,
+    producto: producto.nombre,
+    entrada: inputValor.value + " " + unidad,
+    resultado: resultadoDiv.textContent
+  });
+  guardarHistorialCalculos();
+  renderHistorialCalculos();
+}
+
+function obtenerProductoParaCalculo() {
+  if (materiaManual) return materiaManual;
+
+  if (!productos || productos.length === 0 || selectProducto.value === "") {
+    return null;
+  }
+
+  const i = parseInt(selectProducto.value, 10);
+  if (isNaN(i) || i < 0 || i >= productos.length) return null;
+  return productos[i];
+}
+
+function actualizarMateriaManualUI() {
+  if (!materiaManualInfo || !materiaManualText) return;
+
+  if (materiaManual) {
+    materiaManualText.textContent = `${materiaManual.nombre} (${materiaManual.densidad} g/mL)`;
+    materiaManualInfo.classList.remove("hidden");
+  } else {
+    materiaManualText.textContent = "";
+    materiaManualInfo.classList.add("hidden");
+  }
+}
+
+function limpiarMateriaManual() {
+  materiaManual = null;
+  bloqueoSeleccionProducto = false;
+  if (selectProducto) {
+    if (productos && productos.length > 0) {
+      selectProducto.disabled = false;
+    }
+  }
+  actualizarMateriaManualUI();
+}
+
+if (btnMateriaManual) {
+  btnMateriaManual.addEventListener("click", () => {
+    const nombre = prompt("Nombre de la materia manual:");
+    if (!nombre) return;
+    const nombreLimpio = nombre.trim();
+    if (!nombreLimpio) return;
+
+    const densidadStr = prompt("Densidad en g/mL (solo número, por ejemplo 2.16):");
+    const densidad = parseFloat(densidadStr);
+
+    if (isNaN(densidad) || densidad <= 0) {
+      alert("Densidad no válida.");
+      return;
+    }
+
+    const habiaSeleccion = selectProducto && selectProducto.value !== "" && !selectProducto.disabled;
+
+    if (selectProducto) {
+      selectProducto.selectedIndex = -1;
+      if (!habiaSeleccion) {
+        bloqueoSeleccionProducto = true;
+        selectProducto.disabled = true;
+      }
+    }
+
+    materiaManual = { nombre: nombreLimpio, densidad };
+    actualizarMateriaManualUI();
+  });
+}
+
+if (btnEliminarMateriaManual) {
+  btnEliminarMateriaManual.addEventListener("click", () => {
+    limpiarMateriaManual();
+  });
+}
+
+if (selectProducto) {
+  selectProducto.addEventListener("change", () => {
+    if (materiaManual && !selectProducto.disabled) {
+      limpiarMateriaManual();
+    }
+  });
+}
 
 /* ===========================
    8. DISOLUCIÓN
@@ -637,13 +676,19 @@ if (btnDetallesDisolucion) {
       return;
     }
 
-    let html = "<strong>Detalle de volúmenes por materia prima:</strong><ul>";
-    ultimoDetalleDisolucion.forEach(item => {
-      html += `<li>${item.nombre}: ${item.cantidad} ${item.unidad} → ${item.volumenMl.toFixed(2)} mL</li>`;
-    });
-    html += "</ul>";
+    detallesDisolucionDiv.innerHTML = "";
+    const titulo = document.createElement("strong");
+    titulo.textContent = "Detalle de volúmenes por materia prima:";
 
-    detallesDisolucionDiv.innerHTML = html;
+    const ul = document.createElement("ul");
+    ultimoDetalleDisolucion.forEach(item => {
+      const li = document.createElement("li");
+      li.textContent = `${item.nombre}: ${item.cantidad} ${item.unidad} → ${item.volumenMl.toFixed(2)} mL`;
+      ul.appendChild(li);
+    });
+
+    detallesDisolucionDiv.appendChild(titulo);
+    detallesDisolucionDiv.appendChild(ul);
     detallesDisolucionDiv.classList.remove("hidden");
   });
 }
@@ -656,7 +701,6 @@ function inicializar() {
   cargarProductos();
   renderSelectProductos();
   renderTablaProductos();
-  actualizarPlaceholder();
 
   cargarHistorialCalculos();
   renderHistorialCalculos();
@@ -764,26 +808,57 @@ if (btnBorrarHistDis) {
 }
 
 /* ===========================
-   13. MODAL DE INFORMACIÓN
+   13. MODAL DE AJUSTES + TEMA
    =========================== */
 
-const btnInfo = document.getElementById("btnInfo");
-const infoModal = document.getElementById("info-modal");
-const btnCerrarInfo = document.getElementById("btnCerrarInfo");
+const LS_THEME = "theme_mode";
+const btnSettings = document.getElementById("btnSettings");
+const settingsModal = document.getElementById("settings-modal");
+const btnCerrarSettings = document.getElementById("btnCerrarSettings");
+const btnThemeLight = document.getElementById("btnThemeLight");
+const btnThemeDark = document.getElementById("btnThemeDark");
 
-if (btnInfo && infoModal && btnCerrarInfo) {
-  btnInfo.addEventListener("click", () => {
-    infoModal.classList.remove("hidden");
+function aplicarTema(modo) {
+  if (modo === "dark") {
+    document.body.classList.add("dark");
+    if (btnThemeDark) btnThemeDark.classList.add("active-theme");
+    if (btnThemeLight) btnThemeLight.classList.remove("active-theme");
+  } else {
+    document.body.classList.remove("dark");
+    if (btnThemeLight) btnThemeLight.classList.add("active-theme");
+    if (btnThemeDark) btnThemeDark.classList.remove("active-theme");
+  }
+}
+
+function guardarTema(modo) {
+  localStorage.setItem(LS_THEME, modo);
+  aplicarTema(modo);
+}
+
+const temaGuardado = localStorage.getItem(LS_THEME) || "light";
+aplicarTema(temaGuardado);
+
+if (btnThemeLight) {
+  btnThemeLight.addEventListener("click", () => guardarTema("light"));
+}
+
+if (btnThemeDark) {
+  btnThemeDark.addEventListener("click", () => guardarTema("dark"));
+}
+
+if (btnSettings && settingsModal && btnCerrarSettings) {
+  btnSettings.addEventListener("click", () => {
+    settingsModal.classList.remove("hidden");
   });
 
-  btnCerrarInfo.addEventListener("click", () => {
-    infoModal.classList.add("hidden");
+  btnCerrarSettings.addEventListener("click", () => {
+    settingsModal.classList.add("hidden");
   });
 
   // Cerrar al hacer clic fuera del contenido
   window.addEventListener("click", (e) => {
-    if (e.target === infoModal) {
-      infoModal.classList.add("hidden");
+    if (e.target === settingsModal) {
+      settingsModal.classList.add("hidden");
     }
   });
 }
@@ -806,9 +881,24 @@ let calcOperator = null;
 let calcJustCalculated = false;
 let calcHistoryList = [];
 
+function getCalcDisplayText() {
+  if (calcCurrent === "Error") {
+    return "Error";
+  }
+
+  if (calcOperator && calcPrevious !== null) {
+    if (calcJustCalculated) {
+      return `${calcPrevious} ${calcOperator}`;
+    }
+    return `${calcPrevious} ${calcOperator} ${calcCurrent}`;
+  }
+
+  return calcCurrent;
+}
+
 function updateCalcDisplay() {
   if (calcDisplay) {
-    calcDisplay.textContent = calcCurrent;
+    calcDisplay.textContent = getCalcDisplayText();
   }
 }
 
@@ -1058,7 +1148,10 @@ if (btnImportarDatos && inputImportarDatos) {
 
         // Productos
         if (Array.isArray(data.productos)) {
-          productos = data.productos;
+          productos = data.productos.filter(p =>
+            p && typeof p.nombre === "string" && p.nombre.trim() !== "" &&
+            typeof p.densidad === "number" && isFinite(p.densidad) && p.densidad > 0
+          );
           guardarProductos();
           renderSelectProductos();
           renderTablaProductos();
@@ -1066,14 +1159,22 @@ if (btnImportarDatos && inputImportarDatos) {
 
         // Historial de cálculos
         if (Array.isArray(data.historialCalculos)) {
-          historialCalculos = data.historialCalculos;
+          historialCalculos = data.historialCalculos.filter(item =>
+            item && typeof item.fecha === "string" && typeof item.producto === "string" &&
+            typeof item.entrada === "string" && typeof item.resultado === "string"
+          );
           guardarHistorialCalculos();
           renderHistorialCalculos();
         }
 
         // Historial de disoluciones
         if (Array.isArray(data.historialDisoluciones)) {
-          historialDisoluciones = data.historialDisoluciones;
+          historialDisoluciones = data.historialDisoluciones.filter(item =>
+            item && typeof item.fecha === "string" &&
+            typeof item.volumenFinal === "number" && isFinite(item.volumenFinal) &&
+            typeof item.volumenAgua === "number" && isFinite(item.volumenAgua) &&
+            Array.isArray(item.materias)
+          );
           guardarHistorialDisoluciones();
           renderHistorialDisoluciones();
         }

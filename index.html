@@ -12,10 +12,16 @@
 </head>
 <body>
 
+  <!-- BANNER DE ACTUALIZACIÓN -->
+  <div id="updateBanner" class="update-banner hidden" aria-live="polite">
+    <span>Hay una nueva versión disponible.</span>
+    <button id="btnUpdateApp" type="button">Actualizar</button>
+  </div>
+
   <!-- CABECERA CON TÍTULO + BOTÓN INFO -->
   <header class="app-header">
     <h1>Densidades</h1>
-    <button id="btnInfo" class="icon-btn" aria-label="Información">i</button>
+    <button id="btnSettings" class="icon-btn" aria-label="Ajustes">⚙</button>
   </header>
 
   <!-- MENÚ PRINCIPAL -->
@@ -23,7 +29,7 @@
     <h2>Menú principal</h2>
     <p>Selecciona una opción:</p>
 
-    <button class="menu-btn" data-target="calc">Calculadora</button>
+    <button class="menu-btn" data-target="calc">Calculadora MP</button>
     <button class="menu-btn" data-target="disolucion">Disolución</button>
     <button class="menu-btn" data-target="productos">Materias primas</button>
     <button class="menu-btn" data-target="historial">Historial</button>
@@ -33,49 +39,36 @@
       Calc rápida
     </button>
 
-    <hr class="menu-separator">
-
-    <h3>Datos</h3>
-    <button id="btnExportarDatos" class="menu-btn">Exportar datos</button>
-    <button id="btnImportarDatos" class="menu-btn small-btn">Importar datos</button>
-
-    <!-- input oculto para seleccionar el archivo de importación -->
-    <input type="file" id="inputImportarDatos" accept="application/json" style="display:none" />
   </div>
 
   <!-- ================= CALCULADORA ================= -->
   <div id="tab-calc" class="tab">
     <div class="card">
       <button class="back-btn">← Menú principal</button>
-      <h2>Cálculo</h2>
+      <h2>Calculadora MP</h2>
+      <p class="hint-text">Selecciona o añade una MP y apunta su masa (g) para obtener el volumen que ocupa.</p>
 
       <label for="producto">Producto:</label>
       <select id="producto"></select>
 
-      <label for="tipoCalculo">Tipo de cálculo:</label>
-      <select id="tipoCalculo">
-        <option value="masa-a-vol">Masa → Volumen</option>
-        <option value="vol-a-masa">Volumen → Masa</option>
-      </select>
+      <div class="manual-materia-row">
+        <button id="btnMateriaManual" type="button" class="manual-materia-btn">+ Materia manual</button>
+        <div id="materiaManualInfo" class="manual-materia hidden">
+          <span id="materiaManualText"></span>
+          <button id="btnEliminarMateriaManual" type="button" class="manual-materia-remove" aria-label="Eliminar materia manual">×</button>
+        </div>
+      </div>
 
-      <label for="valor">Valor:</label>
-      <input type="number" id="valor" placeholder="Introduce número" />
-
-      <label for="unidad">Unidad:</label>
-      <select id="unidad">
-        <option value="g">g</option>
-        <option value="kg">kg</option>
-        <option value="ml">mL</option>
-        <option value="l">L</option>
-      </select>
+      <label for="valor">Masa (g):</label>
+      <input type="number" id="valor" placeholder="Introduce masa en g" />
 
       <button id="btnCalcular">Calcular</button>
 
       <!-- Mensajes de error-->
-      <div id="error" class="error"></div>
+      <div id="error" class="error" aria-live="polite"></div>
 
       <!-- Resultado -->
-      <div id="resultado" class="resultado"></div>
+      <div id="resultado" class="resultado" aria-live="polite"></div>
     </div>
   </div>
 
@@ -98,11 +91,11 @@
 
       <button id="btnAnadirMateria" type="button">+ Añadir materia prima</button>
 
-      <div id="disolucionError" class="error"></div>
+      <div id="disolucionError" class="error" aria-live="polite"></div>
 
       <button id="btnCalcularDisolucion" type="button">Calcular</button>
 
-      <div id="disolucionResultado" class="resultado"></div>
+      <div id="disolucionResultado" class="resultado" aria-live="polite"></div>
 
       <button id="btnDetallesDisolucion" type="button" class="hidden">Detalles</button>
       <div id="detallesDisolucion" class="detalles hidden"></div>
@@ -227,10 +220,26 @@
     </div>
   </div>
 
-  <!-- MODAL DE INFORMACIÓN / CLÁUSULA -->
-  <div id="info-modal" class="modal hidden">
+  <!-- MODAL DE AJUSTES -->
+  <div id="settings-modal" class="modal hidden">
     <div class="card modal-card">
-      <h2>Información</h2>
+      <h2>Ajustes</h2>
+
+      <h3>Tema</h3>
+      <div class="settings-row">
+        <span>Modo</span>
+        <div class="theme-toggle">
+          <button id="btnThemeLight" type="button" class="theme-btn">Claro</button>
+          <button id="btnThemeDark" type="button" class="theme-btn">Oscuro</button>
+        </div>
+      </div>
+
+      <h3>Datos</h3>
+      <button id="btnExportarDatos" class="menu-btn">Exportar datos</button>
+      <button id="btnImportarDatos" class="menu-btn small-btn">Importar datos</button>
+      <input type="file" id="inputImportarDatos" accept="application/json" style="display:none" />
+
+      <h3>Información</h3>
       <p class="info-text">
         Esta aplicación es una herramienta de apoyo para cálculos de volumen y densidad.
         Los resultados dependen de la corrección de los datos introducidos por el usuario
@@ -241,16 +250,55 @@
         en el técnico o profesional que realiza la fórmula y en los procedimientos
         de control del laboratorio.
       </p>
-      <button id="btnCerrarInfo">Cerrar</button>
+
+      <button id="btnCerrarSettings">Cerrar</button>
     </div>
   </div>
 
   <script src="app.js"></script>
   <script>
     if ("serviceWorker" in navigator) {
+      const updateBanner = document.getElementById("updateBanner");
+      const btnUpdateApp = document.getElementById("btnUpdateApp");
+      let waitingWorker = null;
+
+      const showUpdateBanner = () => {
+        if (updateBanner) updateBanner.classList.remove("hidden");
+      };
+
       navigator.serviceWorker.register("service-worker.js")
-        .then(() => console.log("SW registrado"))
+        .then(reg => {
+          console.log("SW registrado");
+
+          if (reg.waiting) {
+            waitingWorker = reg.waiting;
+            showUpdateBanner();
+          }
+
+          reg.addEventListener("updatefound", () => {
+            const newWorker = reg.installing;
+            if (!newWorker) return;
+            newWorker.addEventListener("statechange", () => {
+              if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+                waitingWorker = newWorker;
+                showUpdateBanner();
+              }
+            });
+          });
+        })
         .catch(err => console.error("SW error:", err));
+
+      if (btnUpdateApp) {
+        btnUpdateApp.addEventListener("click", () => {
+          if (waitingWorker) {
+            waitingWorker.postMessage({ type: "SKIP_WAITING" });
+          }
+        });
+      }
+
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        window.location.reload();
+      });
     }
   </script>
 </body>
