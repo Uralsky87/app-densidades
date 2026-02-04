@@ -720,14 +720,20 @@ const mainMenu = document.getElementById("main-menu");
 const tabs = document.querySelectorAll(".tab");
 
 // Funciones de navegación
-function mostrarMenuPrincipal() {
+function mostrarMenuPrincipal({ pushState = false, replaceState = false } = {}) {
   if (mainMenu) {
     mainMenu.style.display = "block";
   }
   tabs.forEach(t => t.classList.remove("active"));
+
+  if (replaceState) {
+    history.replaceState({ view: "menu" }, "", location.href);
+  } else if (pushState) {
+    history.pushState({ view: "menu" }, "", location.href);
+  }
 }
 
-function abrirTab(nombre) {
+function abrirTab(nombre, { pushState = false } = {}) {
   if (mainMenu) {
     mainMenu.style.display = "none";
   }
@@ -736,25 +742,45 @@ function abrirTab(nombre) {
   if (tab) {
     tab.classList.add("active");
   }
+
+  if (pushState) {
+    history.pushState({ view: "tab", tab: nombre }, "", location.href);
+  }
 }
 
 // Botones del menú principal
-document.querySelectorAll(".menu-btn").forEach(btn => {
+document.querySelectorAll(".menu-btn, .menu-card").forEach(btn => {
   btn.addEventListener("click", () => {
     const target = btn.dataset.target;
-    if (target) abrirTab(target);
+    if (target) abrirTab(target, { pushState: true });
   });
 });
 
 // Botones de volver
 document.querySelectorAll(".back-btn").forEach(btn => {
   btn.addEventListener("click", () => {
-    mostrarMenuPrincipal();
+    history.back();
   });
 });
 
-// Mostrar menú principal al inicio
-mostrarMenuPrincipal();
+// Mostrar menú principal al inicio y fijar estado base
+mostrarMenuPrincipal({ replaceState: true });
+
+// Manejo del botón atrás del móvil (historial)
+window.addEventListener("popstate", event => {
+  const state = event.state;
+
+  if (settingsModal && !settingsModal.classList.contains("hidden")) {
+    settingsModal.classList.add("hidden");
+  }
+
+  if (state && state.view === "tab" && state.tab) {
+    abrirTab(state.tab);
+    return;
+  }
+
+  mostrarMenuPrincipal();
+});
 
 /* ===========================
    11. SUBPestañas de HISTORIAL
@@ -812,7 +838,11 @@ if (btnBorrarHistDis) {
    =========================== */
 
 const LS_THEME = "theme_mode";
-const btnSettings = document.getElementById("btnSettings");
+const btnMenu = document.getElementById("btnMenu");
+const menuDropdown = document.getElementById("menuDropdown");
+const btnOpenSettings = document.getElementById("btnOpenSettings");
+const btnOpenCalcRapida = document.getElementById("btnOpenCalcRapida");
+const btnOpenHistorial = document.getElementById("btnOpenHistorial");
 const settingsModal = document.getElementById("settings-modal");
 const btnCerrarSettings = document.getElementById("btnCerrarSettings");
 const btnThemeLight = document.getElementById("btnThemeLight");
@@ -846,22 +876,80 @@ if (btnThemeDark) {
   btnThemeDark.addEventListener("click", () => guardarTema("dark"));
 }
 
-if (btnSettings && settingsModal && btnCerrarSettings) {
-  btnSettings.addEventListener("click", () => {
-    settingsModal.classList.remove("hidden");
-  });
+function abrirSettings({ pushState = false } = {}) {
+  if (!settingsModal) return;
+  settingsModal.classList.remove("hidden");
+  if (pushState) {
+    history.pushState({ view: "settings" }, "", location.href);
+  }
+}
 
+function cerrarSettings({ useHistory = false } = {}) {
+  if (!settingsModal) return;
+  settingsModal.classList.add("hidden");
+  if (useHistory && history.state && history.state.view === "settings") {
+    history.back();
+  }
+}
+
+function abrirMenuDropdown() {
+  if (!menuDropdown) return;
+  menuDropdown.classList.remove("hidden");
+}
+
+function cerrarMenuDropdown() {
+  if (!menuDropdown) return;
+  menuDropdown.classList.add("hidden");
+}
+
+if (btnMenu && menuDropdown) {
+  btnMenu.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (menuDropdown.classList.contains("hidden")) {
+      abrirMenuDropdown();
+    } else {
+      cerrarMenuDropdown();
+    }
+  });
+}
+
+if (btnOpenSettings) {
+  btnOpenSettings.addEventListener("click", () => {
+    cerrarMenuDropdown();
+    abrirSettings({ pushState: true });
+  });
+}
+
+if (btnOpenCalcRapida) {
+  btnOpenCalcRapida.addEventListener("click", () => {
+    cerrarMenuDropdown();
+    abrirTab("calcrapida", { pushState: true });
+  });
+}
+
+if (btnOpenHistorial) {
+  btnOpenHistorial.addEventListener("click", () => {
+    cerrarMenuDropdown();
+    abrirTab("historial", { pushState: true });
+  });
+}
+
+if (settingsModal && btnCerrarSettings) {
   btnCerrarSettings.addEventListener("click", () => {
-    settingsModal.classList.add("hidden");
+    cerrarSettings({ useHistory: true });
   });
 
   // Cerrar al hacer clic fuera del contenido
   window.addEventListener("click", (e) => {
     if (e.target === settingsModal) {
-      settingsModal.classList.add("hidden");
+      cerrarSettings({ useHistory: true });
     }
   });
 }
+
+window.addEventListener("click", () => {
+  cerrarMenuDropdown();
+});
 
 /* ===========================
    15. CALCULADORA RÁPIDA

@@ -21,24 +21,38 @@
   <!-- CABECERA CON TÍTULO + BOTÓN INFO -->
   <header class="app-header">
     <h1>Densidades</h1>
-    <button id="btnSettings" class="icon-btn" aria-label="Ajustes">⚙</button>
+    <div class="menu-wrapper">
+      <button id="btnMenu" class="icon-btn" aria-label="Menú">☰</button>
+      <div id="menuDropdown" class="menu-dropdown hidden" role="menu" aria-label="Menú rápido">
+        <button id="btnOpenSettings" type="button" role="menuitem">Ajustes</button>
+        <button id="btnOpenCalcRapida" type="button" role="menuitem">Calculadora</button>
+        <button id="btnOpenHistorial" type="button" role="menuitem">Historial</button>
+      </div>
+    </div>
   </header>
 
   <!-- MENÚ PRINCIPAL -->
   <div id="main-menu" class="card">
-    <h2>Menú principal</h2>
-    <p>Selecciona una opción:</p>
-
-    <button class="menu-btn" data-target="calc">Calculadora MP</button>
-    <button class="menu-btn" data-target="disolucion">Disolución</button>
-    <button class="menu-btn" data-target="productos">Materias primas</button>
-    <button class="menu-btn" data-target="historial">Historial</button>
-
-    <!-- Botón especial para la calculadora rápida -->
-    <button class="menu-btn menu-btn-small menu-btn-green" data-target="calcrapida">
-      Calc rápida
-    </button>
-
+    <div class="menu-grid">
+      <div class="menu-item">
+        <button class="menu-card" data-target="calc">
+          <span class="menu-card-title">Calculadora MP</span>
+        </button>
+        <span class="menu-card-desc">Calcula el volumen de una Materia Prima.</span>
+      </div>
+      <div class="menu-item">
+        <button class="menu-card" data-target="disolucion">
+          <span class="menu-card-title">Disolución</span>
+        </button>
+        <span class="menu-card-desc">Calcula el agua total de una mezcla de MP.</span>
+      </div>
+      <div class="menu-item">
+        <button class="menu-card" data-target="productos">
+          <span class="menu-card-title">Materias primas</span>
+        </button>
+        <span class="menu-card-desc">Agrega MP y sus densidades para cálculos rápidos.</span>
+      </div>
+    </div>
   </div>
 
   <!-- ================= CALCULADORA ================= -->
@@ -52,7 +66,7 @@
       <select id="producto"></select>
 
       <div class="manual-materia-row">
-        <button id="btnMateriaManual" type="button" class="manual-materia-btn">+ Materia manual</button>
+        <button id="btnMateriaManual" type="button" class="manual-materia-btn action-btn action-btn-soft">+ Materia manual</button>
         <div id="materiaManualInfo" class="manual-materia hidden">
           <span id="materiaManualText"></span>
           <button id="btnEliminarMateriaManual" type="button" class="manual-materia-remove" aria-label="Eliminar materia manual">×</button>
@@ -62,7 +76,7 @@
       <label for="valor">Masa (g):</label>
       <input type="number" id="valor" placeholder="Introduce masa en g" />
 
-      <button id="btnCalcular">Calcular</button>
+      <button id="btnCalcular" class="action-btn">Calcular</button>
 
       <!-- Mensajes de error-->
       <div id="error" class="error" aria-live="polite"></div>
@@ -78,7 +92,7 @@
       <button class="back-btn">← Menú principal</button>
       <h2>Disolución</h2>
 
-      <button id="btnResetDisolucion" type="button">Reset</button>
+      <button id="btnResetDisolucion" type="button" class="action-btn action-btn-soft">Reset</button>
 
       <label for="aguaCsp">Volumen final CSP de agua:</label>
       <input type="number" id="aguaCsp" placeholder="Volumen total final en mL" />
@@ -89,24 +103,24 @@
 
       <div id="materiasContainer"></div>
 
-      <button id="btnAnadirMateria" type="button">+ Añadir materia prima</button>
+      <button id="btnAnadirMateria" type="button" class="action-btn">+ Añadir materia prima</button>
 
       <div id="disolucionError" class="error" aria-live="polite"></div>
 
-      <button id="btnCalcularDisolucion" type="button">Calcular</button>
+      <button id="btnCalcularDisolucion" type="button" class="action-btn">Calcular</button>
 
       <div id="disolucionResultado" class="resultado" aria-live="polite"></div>
 
-      <button id="btnDetallesDisolucion" type="button" class="hidden">Detalles</button>
+      <button id="btnDetallesDisolucion" type="button" class="action-btn action-btn-soft hidden">Detalles</button>
       <div id="detallesDisolucion" class="detalles hidden"></div>
     </div>
   </div>
 
-  <!-- ================= CALC RÁPIDA ================= -->
+  <!-- ================= CALCULADORA ================= -->
   <div id="tab-calcrapida" class="tab">
     <div class="card">
       <button class="back-btn">← Menú principal</button>
-      <h2>Calc rápida</h2>
+      <h2>Calculadora</h2>
 
       <!-- Pantalla de la calculadora -->
       <div id="calcDisplay" class="calc-display">0</div>
@@ -153,7 +167,7 @@
       <button class="back-btn">← Menú principal</button>
       <h2>Materias primas</h2>
 
-      <button id="btnNuevoProducto">Añadir materia prima</button>
+      <button id="btnNuevoProducto" class="action-btn">Añadir materia prima</button>
 
       <table id="tablaProductos">
         <thead>
@@ -175,13 +189,13 @@
       <h2>Historial</h2>
 
       <nav class="subnav">
-        <button class="subtab-btn active-subtab" data-subtab="calculos">Cálculos</button>
+        <button class="subtab-btn active-subtab action-btn" data-subtab="calculos">Cálculos</button>
         <button class="subtab-btn" data-subtab="disoluciones">Disoluciones</button>
       </nav>
 
       <!-- Subpestaña: Historial de cálculos -->
       <div id="subtab-calculos" class="subtab-panel active-subtab-panel">
-        <button id="btnBorrarHistorialCalculos">Borrar historial</button>
+        <button id="btnBorrarHistorialCalculos" class="action-btn action-btn-soft">Borrar historial</button>
 
         <table id="tablaHistorialCalculos">
           <thead>
@@ -200,7 +214,7 @@
 
       <!-- Subpestaña: Historial de disoluciones -->
       <div id="subtab-disoluciones" class="subtab-panel">
-        <button id="btnBorrarHistorialDisoluciones">Borrar historial de disoluciones</button>
+        <button id="btnBorrarHistorialDisoluciones" class="action-btn action-btn-soft">Borrar historial de disoluciones</button>
 
         <table id="tablaHistorialDisoluciones">
           <thead>
@@ -235,23 +249,27 @@
       </div>
 
       <h3>Datos</h3>
-      <button id="btnExportarDatos" class="menu-btn">Exportar datos</button>
-      <button id="btnImportarDatos" class="menu-btn small-btn">Importar datos</button>
+      <button id="btnExportarDatos" class="menu-btn action-btn">Exportar datos</button>
+      <button id="btnImportarDatos" class="menu-btn small-btn action-btn action-btn-soft">Importar datos</button>
       <input type="file" id="inputImportarDatos" accept="application/json" style="display:none" />
 
-      <h3>Información</h3>
-      <p class="info-text">
-        Esta aplicación es una herramienta de apoyo para cálculos de volumen y densidad.
-        Los resultados dependen de la corrección de los datos introducidos por el usuario
-        (densidades, cantidades, unidades, etc.).
-      </p>
-      <p class="info-text">
-        La responsabilidad final de verificar los cálculos y de la preparación recae siempre
-        en el técnico o profesional que realiza la fórmula y en los procedimientos
-        de control del laboratorio.
-      </p>
+      <details class="settings-details">
+        <summary class="settings-summary">Información</summary>
+        <div class="settings-details-content">
+          <p class="info-text">
+            Esta aplicación es una herramienta de apoyo para cálculos de volumen y densidad.
+            Los resultados dependen de la corrección de los datos introducidos por el usuario
+            (densidades, cantidades, unidades, etc.).
+          </p>
+          <p class="info-text">
+            La responsabilidad final de verificar los cálculos y de la preparación recae siempre
+            en el técnico o profesional que realiza la fórmula y en los procedimientos
+            de control del laboratorio.
+          </p>
+        </div>
+      </details>
 
-      <button id="btnCerrarSettings">Cerrar</button>
+      <button id="btnCerrarSettings" class="action-btn action-btn-soft">Cerrar</button>
     </div>
   </div>
 

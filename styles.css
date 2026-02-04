@@ -3,7 +3,7 @@ html {
 }
 
 body {
-  font-family: Arial, sans-serif;
+  font-family: sans-serif;
   margin: 0;
   padding: 20px;
   background: linear-gradient(135deg, #e0f7fa, #f4f4f4);
@@ -45,7 +45,93 @@ body.dark {
 h1 {
   text-align: center;
   margin-bottom: 10px;
-  font-size: 1.6rem; /* un poco más grande */
+  font-size: 1.7rem;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  color: #0f172a;
+}
+
+body.dark h1 {
+  color: #e5e7eb;
+}
+
+.app-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  max-width: 500px;
+  margin: 0 auto 10px auto;
+}
+
+.app-header h1 {
+  margin: 0;
+  grid-column: 2;
+  justify-self: center;
+}
+
+.menu-wrapper {
+  grid-column: 3;
+  justify-self: end;
+}
+
+.icon-btn {
+  width: auto;
+  margin-top: 0;
+  background: #e5e7eb;
+  color: #111827;
+  padding: 8px 12px;
+  font-size: 1.1rem;
+}
+
+body.dark .icon-btn {
+  background: #374151;
+  color: #e5e7eb;
+}
+
+.menu-wrapper {
+  position: relative;
+}
+
+.menu-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  z-index: 1000;
+}
+
+body.dark .menu-dropdown {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+.menu-dropdown button {
+  width: 100%;
+  margin-top: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  box-shadow: none;
+  transition: transform 0.08s ease, background 0.2s ease;
+}
+
+.menu-dropdown button:hover {
+  background: #f3f4f6;
+  transform: translateX(2px);
+}
+
+body.dark .menu-dropdown button:hover {
+  background: #111827;
 }
 
 .card {
@@ -122,6 +208,14 @@ td button {
   font-size: 0.85em;
   flex: 1;
   text-align: center;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  transition: transform 0.08s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+td button:active {
+  transform: translateY(1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 td button:first-child {
@@ -328,6 +422,61 @@ th, td {
 .menu-btn {
   margin-top: 10px;
   font-size: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.08s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.menu-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+.menu-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Botones elegantes (Ajustes + secciones principales) */
+.action-btn {
+  background: linear-gradient(135deg, #2563eb 0%, #38bdf8 100%);
+  color: #ffffff;
+  border: none;
+  font-weight: 700;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
+  transition: transform 0.08s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.action-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.3);
+  filter: brightness(1.02);
+}
+
+.action-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
+}
+
+.action-btn-soft {
+  background: #f3f4f6;
+  color: #111827;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.action-btn-soft:hover {
+  filter: none;
+  background: #e5e7eb;
+}
+
+body.dark .action-btn-soft {
+  background: #1f2937;
+  color: #e5e7eb;
+}
+
+body.dark .action-btn {
+  box-shadow: 0 6px 16px rgba(56, 189, 248, 0.25);
 }
 
 /* ===== BOTÓN VOLVER (←) ===== */
@@ -376,6 +525,48 @@ body.dark .modal {
   font-size: 0.95rem;
 }
 
+.settings-details {
+  margin-top: 10px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+body.dark .settings-details {
+  background: #111827;
+  border-color: #374151;
+}
+
+.settings-summary {
+  cursor: pointer;
+  font-weight: bold;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-summary::-webkit-details-marker {
+  display: none;
+}
+
+.settings-summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.2s ease;
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+
+.settings-details[open] .settings-summary::after {
+  transform: rotate(90deg);
+}
+
+.settings-details-content {
+  margin-top: 8px;
+}
+
 /* ===== AJUSTES ===== */
 
 .settings-row {
@@ -396,6 +587,9 @@ body.dark .modal {
   margin-top: 0;
   background: #e5e7eb;
   color: #111827;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.08s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .theme-btn.active-theme {
@@ -406,6 +600,16 @@ body.dark .modal {
 body.dark .theme-btn {
   background: #374151;
   color: #e5e7eb;
+}
+
+.theme-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+.theme-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
 /* ===== DISOLUCIÓN ===== */
@@ -593,23 +797,31 @@ body.dark .theme-btn {
 /* ===== Calculadora rápida ===== */
 
 .calc-display {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  background: #ffffff;
-  font-size: 1.4rem;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  font-size: 1.6rem;
+  font-weight: 600;
   text-align: right;
-  min-height: 40px;
+  min-height: 52px;
   box-sizing: border-box;
   word-wrap: break-word;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+body.dark .calc-display {
+  background: linear-gradient(180deg, #111827 0%, #0f172a 100%);
+  border-color: #374151;
+  color: #e5e7eb;
 }
 
 .calc-layout {
   display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 10px;
+  margin-bottom: 14px;
 }
 
 .calc-keypad {
@@ -621,25 +833,36 @@ body.dark .theme-btn {
 
 .calc-btn,
 .calc-op-btn {
-  padding: 10px;
-  font-size: 1.2rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  background: #f2f2f2;
+  padding: 12px;
+  font-size: 1.15rem;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #f8fafc;
+  color: #111827;
   cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.2s ease, background 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+body.dark .calc-btn,
+body.dark .calc-op-btn {
+  background: #1f2937;
+  color: #e5e7eb;
+  border-color: #374151;
 }
 
 .calc-btn:active,
 .calc-op-btn:active {
-  transform: translateY(1px);
+  transform: translateY(2px);
 }
 
 .calc-clear-btn {
-  background: #ffdddd;
+  background: #fde2e2;
+  color: #991b1b;
 }
 
 .calc-clear-btn:hover {
-  background: #ffcccc;
+  background: #fecaca;
 }
 
 .calc-ops {
@@ -650,20 +873,22 @@ body.dark .theme-btn {
 }
 
 .calc-op-btn {
-  background: #e6f2ff;
+  background: #e0f2fe;
+  color: #0c4a6e;
 }
 
 .calc-op-btn:hover {
-  background: #cce5ff;
+  background: #bae6fd;
 }
 
 .calc-equals-btn {
-  background: #0099ff;
+  background: linear-gradient(135deg, #2563eb 0%, #38bdf8 100%);
   color: #ffffff;
+  font-weight: 700;
 }
 
 .calc-equals-btn:hover {
-  background: #007acc;
+  background: linear-gradient(135deg, #1d4ed8 0%, #0ea5e9 100%);
 }
 
 /* Historial de la calculadora */
@@ -671,14 +896,28 @@ body.dark .theme-btn {
 .calc-history {
   list-style: none;
   padding-left: 0;
-  margin-top: 8px;
-  max-height: 150px;
+  margin-top: 10px;
+  max-height: 170px;
   overflow-y: auto;
   font-size: 0.9rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: #ffffff;
+}
+
+body.dark .calc-history {
+  background: #111827;
+  border-color: #374151;
 }
 
 .calc-history li {
-  padding: 2px 0;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.calc-history li:last-child {
+  border-bottom: none;
 }
 
 .calc-history-empty {
@@ -689,7 +928,7 @@ body.dark .theme-btn {
 
 @media (max-width: 480px) {
   .calc-layout {
-    gap: 6px;
+    gap: 8px;
   }
 
   .calc-ops {
@@ -698,87 +937,67 @@ body.dark .theme-btn {
 
   .calc-btn,
   .calc-op-btn {
-    padding: 8px;
+    padding: 10px;
     font-size: 1.05rem;
   }
 }
 
-/* Centrar el botón Calc rápida */
-.menu-btn-green {
+.menu-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.menu-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.menu-card {
+  text-align: left;
+  background: linear-gradient(135deg, #2563eb 0%, #38bdf8 100%);
+  border: none;
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-top: 0;
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.28);
+  transition: transform 0.1s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.menu-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 26px rgba(37, 99, 235, 0.32);
+}
+
+.menu-card:active {
+  transform: translateY(1px);
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.28);
+}
+
+body.dark .menu-card {
+  background: linear-gradient(135deg, #1d4ed8 0%, #0ea5e9 100%);
+  color: #e5e7eb;
+}
+
+body.dark .menu-card:hover {
+  box-shadow: 0 14px 26px rgba(14, 165, 233, 0.35);
+}
+
+.menu-card-title {
   display: block;
-  margin: 15px auto;   /* ← centra horizontalmente */
+  font-weight: 800;
+  font-size: 1.05rem;
 }
 
-/* Botones numéricos negros */
-.calc-btn {
-  background: #000 !important;
-  color: #fff !important;
-  border: 1px solid #333;
+.menu-card-desc {
+  display: block;
+  font-size: 0.85rem;
+  color: #6b7280;
+  padding-left: 2px;
 }
 
-/* Al pulsar (active): azul con texto blanco */
-.calc-btn:active {
-  background: #0066ff !important;
-  color: #fff !important;
-}
-
-/* Botones de operaciones también negros */
-.calc-op-btn {
-  background: #000 !important;
-  color: #fff !important;
-  border: 1px solid #333;
-}
-
-.calc-op-btn:hover {
-  background: #222 !important;
-}
-
-/* Igual para el botón punto y C */
-.calc-clear-btn {
-  background: #660000 !important;
-  color: #fff !important;
-}
-
-.calc-clear-btn:hover {
-  background: #880000 !important;
-}
-
-/* Botones numéricos: fondo claro + número negro */
-.calc-btn {
-  background: #f2f2f2 !important;
-  color: #000 !important; /* número negro */
-  border: 1px solid #ccc;
-}
-
-/* Al pulsar: fondo azul + texto blanco */
-.calc-btn:active {
-  background: #0066ff !important;
-  color: #fff !important;
-}
-
-/* Botones de operaciones: mismo estilo */
-.calc-op-btn {
-  background: #e6e6e6 !important;
-  color: #000 !important; /* signo negro */
-}
-
-.calc-op-btn:hover {
-  background: #dcdcdc !important;
-}
-
-/* Al pulsar operación: azul con signo blanco */
-.calc-op-btn:active {
-  background: #0066ff !important;
-  color: #fff !important;
-}
-
-/* Botón C (limpiar) */
-.calc-clear-btn {
-  background: #ffe6e6 !important;
-  color: #000 !important;
-}
-
-.calc-clear-btn:active {
-  background: #ff4d4d !important;
-  color: #fff !important;
+body.dark .menu-card-desc {
+  color: #9ca3af;
 }
